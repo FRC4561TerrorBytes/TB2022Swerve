@@ -13,20 +13,10 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    /**
-     * The left-to-right distance between the drivetrain wheels
-     *
-     * Should be measured from center to center.
-     */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
-    /**
-     * The front-to-back distance between the drivetrain wheels.
-     *
-     * Should be measured from center to center.
-     */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.6;
 
-    //public static final int DRIVETRAIN_PIGEON_ID = 0;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
+
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.6;
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 6;
@@ -47,4 +37,22 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 21;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(97.1); // FIXM E Measure and set back right steer offset
+
+    public static final int INTAKE_ROLLER_MOTOR = 12;
+    public static final int PCM = 20;
+    public static final int LEFT_SOLENOID = 1;
+    public static final int RIGHT_SOLENOID = 0;
+
+    public static final double INTAKE_SPEED = 0.5;
+    public static final double FEEDER_SPEED = 0.5;
+
+    public static final int FEEDER_LOWER_MOTOR = 11;
+    public static final int FEEDER_MIDDLE_MOTOR = 10;
+    public static final int FEEDER_UPPER_MOTOR = 9;
+    public static final int UPPER_FEEDER_SENSOR = 0;
+
+    public static final int LEFT_FLYWHEEL_MOTOR = 16;
+    public static final int RIGHT_FLYWHEEL_MOTOR = 15;
+    public static final int TURRET_MOTOR = 13;
+    public static final int HOOD_MOTOR = 14;
 }
