@@ -11,13 +11,18 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -30,6 +35,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(IntakeSubsystem.initializeHardware());
   private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(FeederSubsystem.initializeHardware());
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterSubsystem.initializeHardware());
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -63,10 +69,15 @@ public class RobotContainer {
     JoystickButton primaryButtonX = new JoystickButton(m_controller, Button.kX.value);
     JoystickButton primaryButtonLBumper = new JoystickButton(m_controller, Button.kLeftBumper.value);
     JoystickButton primaryButtonRBumper = new JoystickButton(m_controller, Button.kRightBumper.value);
+    POVButton primaryDPadRight = new POVButton(m_controller, 90);
+    POVButton primaryDPadLeft = new POVButton(m_controller, 270);
+    Trigger primaryTriggerLeft = new Trigger(() -> m_controller.getLeftTriggerAxis() > 0.25);
+
 
     primaryButtonX.whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleArmPosition()));
     primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
+    primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem));
 
   }
 

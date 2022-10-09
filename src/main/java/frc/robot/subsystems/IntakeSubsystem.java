@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
@@ -83,5 +84,15 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  /**
+   * Get both limit switches for ShooterSubsystem
+   */
+  public SparkMaxLimitSwitch[] getLimitSwitches() {
+    return new SparkMaxLimitSwitch[] {
+      m_feederMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen),
+      m_feederMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen)
+    };
   }
 }
