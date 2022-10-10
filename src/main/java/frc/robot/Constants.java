@@ -43,7 +43,7 @@ public final class Constants {
     public static final int LEFT_SOLENOID = 1;
     public static final int RIGHT_SOLENOID = 0;
 
-    public static final double INTAKE_SPEED = 0.5;
+    public static final double INTAKE_SPEED = 0.6;
     public static final double FEEDER_SPEED = 0.5;
 
     public static final int FEEDER_LOWER_MOTOR = 11;

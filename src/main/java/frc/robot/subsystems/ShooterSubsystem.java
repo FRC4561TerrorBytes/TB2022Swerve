@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -51,14 +54,26 @@ public class ShooterSubsystem extends SubsystemBase {
     this.m_rightFlywheelMotor = shooterHardware.rightFlywheelMotor;
     this.m_turretMotor = shooterHardware.turretMotor;
     this.m_hoodMotor = shooterHardware.hoodMotor;
+    
+    m_hoodMotor.configFactoryDefault();
+    m_hoodMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
 
+    int lower = -3200;
+    m_hoodMotor.configReverseSoftLimitThreshold(lower);
+    m_hoodMotor.configForwardSoftLimitThreshold(lower + 3900);
+
+    m_hoodMotor.configReverseSoftLimitEnable(true);
+    m_hoodMotor.configForwardSoftLimitEnable(true);
+    
     m_leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_turretMotor.setIdleMode(IdleMode.kBrake);
+    m_hoodMotor.setNeutralMode(NeutralMode.Brake);
     
     m_leftFlywheelMotor.setInverted(false);
     m_rightFlywheelMotor.setInverted(true);
     m_turretMotor.setInverted(true);
+    m_hoodMotor.setInverted(true);
   }
 
   public void shoot() {
@@ -66,10 +81,42 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.set(0.6);
   }
 
+  //FIXME rm this
+  public void hood(boolean direction) {
+    if (direction) {
+        m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.3);
+    } else {
+        m_hoodMotor.set(TalonSRXControlMode.PercentOutput, -0.3);
+    }
+  }
+
+  //FIXME rm this
+  public void turret(boolean direction) {
+    if (direction) {
+        m_turretMotor.set(0.3);
+    } else {
+        m_turretMotor.set(-0.3);
+    }
+  }
+
+  public void setTurretSpeed(double speed) {
+    m_turretMotor.set(speed);
+  }
+
+  public void setTurretPosition(double angle) {
+    
+  }
+
   public void stop() {
     m_leftFlywheelMotor.stopMotor();
     m_rightFlywheelMotor.stopMotor();
     m_turretMotor.stopMotor();
+    m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.0);
+  }
+
+  //FIXME rm this
+  public void printThing() {
+    System.out.println(m_hoodMotor.getSelectedSensorPosition());
   }
 
   @Override

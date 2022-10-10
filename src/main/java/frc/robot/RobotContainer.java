@@ -19,6 +19,7 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ZeroTurretCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -66,18 +67,34 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    JoystickButton primaryButtonA = new JoystickButton(m_controller, Button.kA.value);
+    JoystickButton primaryButtonB = new JoystickButton(m_controller, Button.kB.value);
     JoystickButton primaryButtonX = new JoystickButton(m_controller, Button.kX.value);
+    JoystickButton primaryButtonY = new JoystickButton(m_controller, Button.kY.value);
     JoystickButton primaryButtonLBumper = new JoystickButton(m_controller, Button.kLeftBumper.value);
     JoystickButton primaryButtonRBumper = new JoystickButton(m_controller, Button.kRightBumper.value);
+    POVButton primaryDPadUp = new POVButton(m_controller, 0);
     POVButton primaryDPadRight = new POVButton(m_controller, 90);
+    POVButton primaryDPadDown = new POVButton(m_controller, 180);
     POVButton primaryDPadLeft = new POVButton(m_controller, 270);
     Trigger primaryTriggerLeft = new Trigger(() -> m_controller.getLeftTriggerAxis() > 0.25);
 
-
+    primaryButtonB.whenPressed(new ZeroTurretCommand(m_shooterSubsystem, m_intakeSubsystem));
     primaryButtonX.whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleArmPosition()));
+    primaryButtonY.whenPressed(new InstantCommand(() -> m_shooterSubsystem.printThing()));
     primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem));
+
+    primaryDPadUp.whenHeld(new InstantCommand(() -> m_shooterSubsystem.hood(true)))
+      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+    primaryDPadDown.whenHeld(new InstantCommand(() -> m_shooterSubsystem.hood(false)))
+      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+
+    primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.turret(true)))
+      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+    primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.turret(false)))
+      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
   }
 
