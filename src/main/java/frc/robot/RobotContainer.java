@@ -36,7 +36,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(IntakeSubsystem.initializeHardware());
   private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(FeederSubsystem.initializeHardware());
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterSubsystem.initializeHardware());
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterSubsystem.initializeHardware(), Constants.HOOD_MOTOR_CONFIG);
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -86,14 +86,16 @@ public class RobotContainer {
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem));
 
-    primaryDPadUp.whenHeld(new InstantCommand(() -> m_shooterSubsystem.hood(true)))
+    primaryButtonA.whenPressed(new InstantCommand(() -> m_shooterSubsystem.setHoodPosition(30)));
+
+    primaryDPadUp.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setHoodSpeed(+0.3)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
-    primaryDPadDown.whenHeld(new InstantCommand(() -> m_shooterSubsystem.hood(false)))
+    primaryDPadDown.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setHoodSpeed(-0.3)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
-    primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.turret(true)))
+    primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(+0.1)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
-    primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.turret(false)))
+    primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(-0.1)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
   }

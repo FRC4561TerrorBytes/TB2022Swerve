@@ -11,11 +11,15 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.TalonPIDConfig;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -48,22 +52,21 @@ public class ShooterSubsystem extends SubsystemBase {
   private CANSparkMax m_turretMotor;
   private TalonSRX m_hoodMotor;
 
+  private SparkMaxPIDController m_leftFlywheelPIDController;
+  private SparkMaxPIDController m_rightFlywheelPIDController;
+  private TalonPIDConfig m_hoodConfig;
+
   /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem(Hardware shooterHardware) {
+  public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig) {
     this.m_leftFlywheelMotor = shooterHardware.leftFlywheelMotor;
     this.m_rightFlywheelMotor = shooterHardware.rightFlywheelMotor;
     this.m_turretMotor = shooterHardware.turretMotor;
     this.m_hoodMotor = shooterHardware.hoodMotor;
+    this.m_leftFlywheelPIDController = m_leftFlywheelMotor.getPIDController();
+    this.m_rightFlywheelPIDController = m_rightFlywheelMotor.getPIDController();
+    this.m_hoodConfig = hoodConfig;
     
-    m_hoodMotor.configFactoryDefault();
-    m_hoodMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-
-    int lower = -3200;
-    m_hoodMotor.configReverseSoftLimitThreshold(lower);
-    m_hoodMotor.configForwardSoftLimitThreshold(lower + 3900);
-
-    m_hoodMotor.configReverseSoftLimitEnable(true);
-    m_hoodMotor.configForwardSoftLimitEnable(true);
+    m_hoodConfig.initializeTalonPID(m_hoodMotor, FeedbackDevice.CTRE_MagEncoder_Absolute);
     
     m_leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
@@ -74,6 +77,8 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.setInverted(true);
     m_turretMotor.setInverted(true);
     m_hoodMotor.setInverted(true);
+
+    
   }
 
   public void shoot() {
@@ -81,22 +86,13 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.set(0.6);
   }
 
-  //FIXME rm this
-  public void hood(boolean direction) {
-    if (direction) {
-        m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.3);
-    } else {
-        m_hoodMotor.set(TalonSRXControlMode.PercentOutput, -0.3);
-    }
+  public void setHoodSpeed(double speed) {
+    m_hoodMotor.set(TalonSRXControlMode.PercentOutput, speed);
   }
 
-  //FIXME rm this
-  public void turret(boolean direction) {
-    if (direction) {
-        m_turretMotor.set(0.3);
-    } else {
-        m_turretMotor.set(-0.3);
-    }
+  public void setHoodPosition(double angle) {
+    angle = MathUtil.clamp(angle, 20, 40);
+    m_hoodMotor.set(TalonSRXControlMode.MotionMagic, 0);
   }
 
   public void setTurretSpeed(double speed) {
