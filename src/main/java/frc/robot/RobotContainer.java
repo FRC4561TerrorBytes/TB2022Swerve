@@ -36,7 +36,10 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(IntakeSubsystem.initializeHardware());
   private final FeederSubsystem m_feederSubsystem = new FeederSubsystem(FeederSubsystem.initializeHardware());
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterSubsystem.initializeHardware(), Constants.HOOD_MOTOR_CONFIG);
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterSubsystem.initializeHardware(), 
+                                                                           Constants.HOOD_MOTOR_CONFIG, 
+                                                                           Constants.FLYWHEEL_CONFIG, 
+                                                                           Constants.TURRET_CONFIG);
 
   private final XboxController m_controller = new XboxController(0);
 

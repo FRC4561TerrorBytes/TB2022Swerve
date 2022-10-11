@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -19,6 +20,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.SparkPIDConfig;
 import frc.robot.TalonPIDConfig;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -52,21 +54,26 @@ public class ShooterSubsystem extends SubsystemBase {
   private CANSparkMax m_turretMotor;
   private TalonSRX m_hoodMotor;
 
-  private SparkMaxPIDController m_leftFlywheelPIDController;
-  private SparkMaxPIDController m_rightFlywheelPIDController;
+  private SparkPIDConfig m_leftFlywheelConfig;
+  private SparkPIDConfig m_rightFlywheelConfig;
+  private SparkPIDConfig m_turretConfig;
   private TalonPIDConfig m_hoodConfig;
 
   /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig) {
+  public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig, SparkPIDConfig flywheelConfig, SparkPIDConfig turretConfig) {
     this.m_leftFlywheelMotor = shooterHardware.leftFlywheelMotor;
     this.m_rightFlywheelMotor = shooterHardware.rightFlywheelMotor;
     this.m_turretMotor = shooterHardware.turretMotor;
     this.m_hoodMotor = shooterHardware.hoodMotor;
-    this.m_leftFlywheelPIDController = m_leftFlywheelMotor.getPIDController();
-    this.m_rightFlywheelPIDController = m_rightFlywheelMotor.getPIDController();
+    this.m_leftFlywheelConfig = flywheelConfig;
+    this.m_rightFlywheelConfig = flywheelConfig;
     this.m_hoodConfig = hoodConfig;
+    this.m_turretConfig = turretConfig;
     
     m_hoodConfig.initializeTalonPID(m_hoodMotor, FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_leftFlywheelConfig.initializeSparkPID(m_leftFlywheelMotor);
+    m_rightFlywheelConfig.initializeSparkPID(m_rightFlywheelMotor);
+    m_turretConfig.initializeSparkPID(m_turretMotor);
     
     m_leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
@@ -77,7 +84,6 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.setInverted(true);
     m_turretMotor.setInverted(true);
     m_hoodMotor.setInverted(true);
-
     
   }
 
