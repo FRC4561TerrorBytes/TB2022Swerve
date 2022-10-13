@@ -13,8 +13,16 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
+import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 public class IntakeSubsystem extends SubsystemBase {
+
+  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+  private final Color m_defaultColor = new Color(0.150, 0.0, 0.296);
 
   private static class Hardware {
     private CANSparkMax feederMotor;
@@ -81,9 +89,17 @@ public class IntakeSubsystem extends SubsystemBase {
     m_feederMotor.stopMotor();
   }
 
+  public Color getColorDifference() {
+    Color currentColor = m_colorSensor.getColor();
+    return new Color(currentColor.red - m_defaultColor.red, 0.0, currentColor.blue - m_defaultColor.blue);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    Color detectedColor = m_colorSensor.getColor();
+    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    SmartDashboard.putNumber("Red", detectedColor.red);
   }
 
   /**

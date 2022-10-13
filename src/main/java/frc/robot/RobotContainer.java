@@ -43,6 +43,8 @@ public class RobotContainer {
 
   private final XboxController m_controller = new XboxController(0);
 
+  private String m_allianceColor = "";
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -61,6 +63,10 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+  }
+
+  public void setAllianceColor(String color) {
+    m_allianceColor = color;
   }
 
   /**
@@ -85,9 +91,9 @@ public class RobotContainer {
     primaryButtonB.whenPressed(new ZeroTurretCommand(m_shooterSubsystem, m_intakeSubsystem));
     primaryButtonX.whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleArmPosition()));
     primaryButtonY.whenPressed(new InstantCommand(() -> m_shooterSubsystem.printThing()));
-    primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem));
+    primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem, m_allianceColor));
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
-    primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem));
+    primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem, 2500));
 
     primaryButtonA.whenPressed(new InstantCommand(() -> m_shooterSubsystem.setHoodPosition(30)));
 

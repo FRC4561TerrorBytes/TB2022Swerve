@@ -13,11 +13,13 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.SparkPIDConfig;
@@ -54,6 +56,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private CANSparkMax m_turretMotor;
   private TalonSRX m_hoodMotor;
 
+  private SparkMaxPIDController m_leftPIDController;
+  private SparkMaxPIDController m_rightPIDController;
+
   private SparkPIDConfig m_leftFlywheelConfig;
   private SparkPIDConfig m_rightFlywheelConfig;
   private SparkPIDConfig m_turretConfig;
@@ -70,10 +75,13 @@ public class ShooterSubsystem extends SubsystemBase {
     this.m_hoodConfig = hoodConfig;
     this.m_turretConfig = turretConfig;
     
-    m_hoodConfig.initializeTalonPID(m_hoodMotor, FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_hoodConfig.initializeTalonPID(m_hoodMotor, FeedbackDevice.CTRE_MagEncoder_Relative);
     m_leftFlywheelConfig.initializeSparkPID(m_leftFlywheelMotor);
     m_rightFlywheelConfig.initializeSparkPID(m_rightFlywheelMotor);
     m_turretConfig.initializeSparkPID(m_turretMotor);
+
+    this.m_leftPIDController = m_leftFlywheelMotor.getPIDController();
+    this.m_rightPIDController = m_rightFlywheelMotor.getPIDController();
     
     m_leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
@@ -87,9 +95,13 @@ public class ShooterSubsystem extends SubsystemBase {
     
   }
 
-  public void shoot() {
-    m_leftFlywheelMotor.set(0.6);
-    m_rightFlywheelMotor.set(0.6);
+  public void setFlywheelSpeed(double rpm) {
+    m_leftPIDController.setReference(rpm, ControlType.kSmartVelocity);
+    m_rightPIDController.setReference(rpm, ControlType.kSmartVelocity);
+  }
+
+  public double getFlywheelSpeed() {
+    return m_leftFlywheelMotor.getEncoder().getVelocity();
   }
 
   public void setHoodSpeed(double speed) {
@@ -98,7 +110,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setHoodPosition(double angle) {
     angle = MathUtil.clamp(angle, 20, 40);
-    m_hoodMotor.set(TalonSRXControlMode.MotionMagic, 0);
+    double setpoint = (angle - 20) / 20 * Constants.HOOD_UPPER_LIMIT;
+    m_hoodMotor.set(TalonSRXControlMode.MotionMagic, setpoint);
   }
 
   public void setTurretSpeed(double speed) {
@@ -124,5 +137,6 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Flywheel sped", getFlywheelSpeed());
   }
 }

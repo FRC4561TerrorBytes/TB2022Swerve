@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -51,7 +53,15 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    if (DriverStation.isDSAttached()) {
+      if (DriverStation.getAlliance() == Alliance.Red) {
+        m_robotContainer.setAllianceColor("Red");
+      } else if (DriverStation.getAlliance() == Alliance.Blue) {
+        m_robotContainer.setAllianceColor("Blue");
+      }
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
