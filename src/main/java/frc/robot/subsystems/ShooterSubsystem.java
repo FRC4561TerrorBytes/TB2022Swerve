@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
+import java.util.Map.Entry;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -24,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.SparkPIDConfig;
 import frc.robot.TalonPIDConfig;
+
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -51,6 +55,28 @@ public class ShooterSubsystem extends SubsystemBase {
     );
   }
 
+  public static class FlywheelHoodSetpoint {
+    private double m_flywheelSpeed = 0.0;
+    private double m_hoodSetpoint = 0.0;
+    /**
+     * Flywheel speed object
+     * @param bigFlywheelSpeed big flywheel speed in RPM
+     * @param hoodSetpoint hood setpoint from 0 - 1.0 (ticks)
+     */
+    public FlywheelHoodSetpoint(double flywheelSpeed, double hoodSetpoint) {
+      this.m_flywheelSpeed = flywheelSpeed;
+      this.m_hoodSetpoint = hoodSetpoint;
+    }
+
+    public double getFlywheelSpeed() {
+      return m_flywheelSpeed;
+    }
+
+    public double getHoodSetpoint() {
+      return m_hoodSetpoint;
+    }
+  }
+
   private CANSparkMax m_leftFlywheelMotor;
   private CANSparkMax m_rightFlywheelMotor;
   private CANSparkMax m_turretMotor;
@@ -63,6 +89,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkPIDConfig m_rightFlywheelConfig;
   private SparkPIDConfig m_turretConfig;
   private TalonPIDConfig m_hoodConfig;
+
+  private double m_minDistance;
+  private double m_maxDistance;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig, SparkPIDConfig flywheelConfig, SparkPIDConfig turretConfig) {
@@ -92,7 +121,6 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.setInverted(true);
     m_turretMotor.setInverted(true);
     m_hoodMotor.setInverted(true);
-    
   }
 
   public void setFlywheelSpeed(double rpm) {
@@ -103,7 +131,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public double getFlywheelSpeed() {
     return m_leftFlywheelMotor.getEncoder().getVelocity();
   }
-
+  
   public void setHoodSpeed(double speed) {
     m_hoodMotor.set(TalonSRXControlMode.PercentOutput, speed);
   }
@@ -126,12 +154,8 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftFlywheelMotor.stopMotor();
     m_rightFlywheelMotor.stopMotor();
     m_turretMotor.stopMotor();
+    m_hoodMotor.set(ControlMode.MotionMagic, 0.0);
     m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.0);
-  }
-
-  //FIXME rm this
-  public void printThing() {
-    System.out.println(m_hoodMotor.getSelectedSensorPosition());
   }
 
   @Override

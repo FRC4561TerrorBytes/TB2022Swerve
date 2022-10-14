@@ -90,7 +90,7 @@ public class RobotContainer {
 
     primaryButtonB.whenPressed(new ZeroTurretCommand(m_shooterSubsystem, m_intakeSubsystem));
     primaryButtonX.whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleArmPosition()));
-    primaryButtonY.whenPressed(new InstantCommand(() -> m_shooterSubsystem.printThing()));
+    
     primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem, m_allianceColor));
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem, 2500));
