@@ -7,14 +7,19 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.autonomous.AutoModes.DriveForwardAuto;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
@@ -43,6 +48,9 @@ public class RobotContainer {
 
   private final XboxController m_controller = new XboxController(0);
 
+  private static SendableChooser<SequentialCommandGroup> m_autoModeChooser = new SendableChooser<>();
+
+
   private String m_allianceColor = "";
 
   /**
@@ -63,6 +71,16 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+  }
+
+  private void autoModeChooser(){
+    m_autoModeChooser.addOption("Drive Forward Test Auto", new DriveForwardAuto(m_drivetrainSubsystem));
+  }
+
+  public void defaultShuffleboardTab() {
+    Shuffleboard.selectTab("Drivetrain");
+    autoModeChooser();
+    SmartDashboard.putData("AUTO MODE", m_autoModeChooser);
   }
 
   public void setAllianceColor(String color) {
@@ -116,7 +134,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    return m_autoModeChooser.getSelected();
   }
 
   private static double deadband(double value, double deadband) {

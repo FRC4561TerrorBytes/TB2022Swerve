@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -169,4 +173,36 @@ public final class Constants {
   public static final double GRAVITY = 9.81;
   // public static final double HOOD_ANGLE_SCALAR
   public static final double WHEEL_CIRCUMFERENCE_METERS = 0.0508 * 2 * Math.PI;
+    
+  //Autonomous robot characterization
+      //TODO: ROBOT CHARACTERIZATION FOR AUTONOMOUS
+  public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
+    new Translation2d(DRIVETRAIN_WHEELBASE_METERS / 2, -DRIVETRAIN_TRACKWIDTH_METERS / 2),
+    new Translation2d(DRIVETRAIN_WHEELBASE_METERS / 2, DRIVETRAIN_TRACKWIDTH_METERS  / 2),
+    new Translation2d(-DRIVETRAIN_WHEELBASE_METERS / 2, -DRIVETRAIN_TRACKWIDTH_METERS / 2),
+    new Translation2d(-DRIVETRAIN_WHEELBASE_METERS / 2, DRIVETRAIN_TRACKWIDTH_METERS / 2));
+
+    //PID Values for x-axis PID controller in Autonomous
+    public static final double AUTO_X_KP = 0.0;
+    public static final double AUTO_X_KI = 0.0;
+    public static final double AUTO_X_KD = 0.0;
+
+    //PID Values for y-axis PID controller in Autonomous
+    public static final double AUTO_Y_KP = 0.0;
+    public static final double AUTO_Y_KI = 0.0;
+    public static final double AUTO_Y_KD = 0.0;
+
+    //PID Values for theta PID controller in Autonomous
+    public static final double AUTO_THETA_KP = 0.0;
+    public static final double AUTO_THETA_KI = 0.0;
+    public static final double AUTO_THETA_KD = 0.0;
+
+    public static double MAX_ANGULAR_ACCELERATION_RADS_PER_SEC_SQUARED = 0.0;
+    public static double MAX_ANGULAR_SPEED_RADS_PER_SEC = 0.0;
+    public static final double MAX_SPEED_METERS_PER_SEC = 0.0;
+    public static final double MAX_ACCELERATION_METERS_PER_SEC_SQUARED = 0.0;
+
+    public static final TrapezoidProfile.Constraints AUTO_THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
+        MAX_ANGULAR_SPEED_RADS_PER_SEC, 
+        MAX_ANGULAR_ACCELERATION_RADS_PER_SEC_SQUARED);
 }

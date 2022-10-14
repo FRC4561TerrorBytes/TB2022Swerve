@@ -9,17 +9,21 @@ import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class DrivetrainSubsystem extends SubsystemBase {
         /**
@@ -67,6 +71,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // cause the angle reading to increase until it wraps back over to zero.
         //private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
         private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
+        private SwerveDriveOdometry m_odometry;
+
         
         // These are our modules. We initialize them in the constructor.
         private final SwerveModule m_frontLeftModule;
@@ -148,7 +154,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.BACK_RIGHT_MODULE_STEER_ENCODER,
                 Constants.BACK_RIGHT_MODULE_STEER_OFFSET
                 );
-
+                
                 // Initialise PID subsystem setpoint and input
                 m_navx.calibrate();
                 zeroGyroscope();
@@ -190,4 +196,41 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
                 m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         }
+
+        public double getHeading(){
+                return m_navx.getRotation2d().getDegrees();
+             }
+           
+             public Rotation2d getRotation2d(){
+               return Rotation2d.fromDegrees(getHeading());
+             }
+           
+             public void zeroHeading(){
+               m_navx.reset();
+             }
+           
+             public Pose2d getPose(){
+               return m_odometry.getPoseMeters();
+             }
+           
+             public void resetOdometry(Pose2d position){
+               m_odometry.resetPosition(position, getRotation2d());
+             }
+
+             public void stopMotors(){
+                m_frontLeftModule.set(0.0, 0.0);
+                m_frontRightModule.set(0.0, 0.0);
+                m_backLeftModule.set(0.0, 0.0);
+                m_backRightModule.set(0.0, 0.0);
+              }
+
+              public void setModuleStates( SwerveModuleState[] swerveStates) {
+                SwerveDriveKinematics.desaturateWheelSpeeds(swerveStates, MAX_VELOCITY_METERS_PER_SECOND);
+                
+                m_frontLeftModule.set(swerveStates[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, swerveStates[0].angle.getRadians());
+                m_frontRightModule.set(swerveStates[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, swerveStates[1].angle.getRadians());
+                m_backLeftModule.set(swerveStates[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, swerveStates[2].angle.getRadians());
+                m_backRightModule.set(swerveStates[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, swerveStates[3].angle.getRadians());
+        }
+
 }
