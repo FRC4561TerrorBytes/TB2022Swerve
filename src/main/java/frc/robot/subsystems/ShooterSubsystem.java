@@ -4,16 +4,18 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
+import java.util.Map.Entry;
+
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.SparkPIDConfig;
 import frc.robot.TalonPIDConfig;
+
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -49,6 +52,28 @@ public class ShooterSubsystem extends SubsystemBase {
     );
   }
 
+  public static class FlywheelHoodSetpoint {
+    private double m_flywheelSpeed = 0.0;
+    private double m_hoodSetpoint = 0.0;
+    /**
+     * Flywheel speed object
+     * @param bigFlywheelSpeed big flywheel speed in RPM
+     * @param hoodSetpoint hood setpoint from 0 - 1.0 (ticks)
+     */
+    public FlywheelHoodSetpoint(double flywheelSpeed, double hoodSetpoint) {
+      this.m_flywheelSpeed = flywheelSpeed;
+      this.m_hoodSetpoint = hoodSetpoint;
+    }
+
+    public double getFlywheelSpeed() {
+      return m_flywheelSpeed;
+    }
+
+    public double getHoodSetpoint() {
+      return m_hoodSetpoint;
+    }
+  }
+
   private CANSparkMax m_leftFlywheelMotor;
   private CANSparkMax m_rightFlywheelMotor;
   private CANSparkMax m_turretMotor;
@@ -59,8 +84,14 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkPIDConfig m_turretConfig;
   private TalonPIDConfig m_hoodConfig;
 
+  private PolynomialSplineFunction m_flywheelVisionCurve;
+  private PolynomialSplineFunction m_hoodVisionCurve;
+  private double m_minDistance;
+  private double m_maxDistance;
+
   /** Creates a new ShooterSubsystem. */
-  public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig, SparkPIDConfig flywheelConfig, SparkPIDConfig turretConfig) {
+  public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig, SparkPIDConfig flywheelConfig, SparkPIDConfig turretConfig, 
+                          List<Entry<Double, FlywheelHoodSetpoint>> flywheelVisionMap) {
     this.m_leftFlywheelMotor = shooterHardware.leftFlywheelMotor;
     this.m_rightFlywheelMotor = shooterHardware.rightFlywheelMotor;
     this.m_turretMotor = shooterHardware.turretMotor;
@@ -85,6 +116,30 @@ public class ShooterSubsystem extends SubsystemBase {
     m_turretMotor.setInverted(true);
     m_hoodMotor.setInverted(true);
     
+    // Initialize shooter vision curves
+    initializeFlywheelVisionCurve(flywheelVisionMap);
+  }
+
+  /**
+   * Initialize vision curve spline functions
+   * @param flywheelVisionMap List of distance/FlywheelSpeed pairs
+   */
+  private void initializeFlywheelVisionCurve(List<Entry<Double, FlywheelHoodSetpoint>> flywheelVisionMap) {
+    double[] distances = new double[flywheelVisionMap.size()];
+    double[] flywheelSpeeds = new double[flywheelVisionMap.size()];
+    double[] hoodSetpoint = new double[flywheelVisionMap.size()];
+
+    for (int i = 0; i < flywheelVisionMap.size(); i++) {
+      distances[i] = flywheelVisionMap.get(i).getKey();
+      flywheelSpeeds[i] = flywheelVisionMap.get(i).getValue().getFlywheelSpeed();
+      hoodSetpoint[i] = flywheelVisionMap.get(i).getValue().getHoodSetpoint();
+    }
+
+    m_minDistance = distances[0];
+    m_maxDistance = distances[distances.length - 1];
+
+    m_flywheelVisionCurve = new SplineInterpolator().interpolate(distances, flywheelSpeeds);
+    m_hoodVisionCurve = new SplineInterpolator().interpolate(distances, hoodSetpoint);
   }
 
   public void shoot() {
@@ -92,13 +147,60 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.set(0.6);
   }
 
+  /**
+   * Automatically sets the flywheel speed based on vision curve
+   * <p>
+   * NOTE: This method ALWAYS shoots high
+   */
+  public void setShooterVision(double distance) {
+    double flywheelSpeed = m_flywheelVisionCurve.value(MathUtil.clamp(distance, m_minDistance, m_maxDistance));
+  
+    double hoodSetpoint = m_hoodVisionCurve.value(MathUtil.clamp(distance, m_minDistance, m_maxDistance));
+
+    setFlywheel(flywheelSpeed);
+    setHoodPosition(hoodSetpoint);
+  }
+
+  /**
+   * Set flywheel to a speed
+   * @param bigSpeed speed of big flywheel in RPM
+   * @param smallSpeed speed of small flywheel in RPM
+   */
+  public void setFlywheel(double flywheelSpeed) {
+    double flywheelSpeeds = MathUtil.clamp(flywheelSpeed, 0, Constants.NEO_MAX_RPM);
+   
+    m_rightFlywheelMotor.set(flywheelSpeeds);
+    m_leftFlywheelMotor.set(flywheelSpeeds);
+  }
+
+  /**
+   * Checks if flywheel is at set speed
+   * @return True if flywheel is at speed else false
+   */
+  public boolean isFlywheelAtSpeed(double distance) {
+    double flywheelTargetSpeed = m_flywheelVisionCurve.value(MathUtil.clamp(distance, m_minDistance, m_maxDistance));
+    double rightFlywheelError = Math.abs(flywheelTargetSpeed - m_rightFlywheelMotor.getEncoder().getVelocity());
+    double leftFlywheelError = Math.abs(flywheelTargetSpeed - m_leftFlywheelMotor.getEncoder().getVelocity());
+    double hoodError = Math.abs(m_hoodMotor.getClosedLoopError());
+
+    boolean isRightFlywheelAtSpeed = (rightFlywheelError < 1.0)
+                                    && flywheelTargetSpeed != 0;
+    boolean isLeftFlywheelAtSpeed = (leftFlywheelError < 1.0)
+                                      && flywheelTargetSpeed != 0;
+    boolean isHoodAtAngle = (hoodError < 1.0)
+                              && m_hoodMotor.getClosedLoopTarget() != 0;
+  
+    return isRightFlywheelAtSpeed && isLeftFlywheelAtSpeed && isHoodAtAngle;
+  }
+  
   public void setHoodSpeed(double speed) {
     m_hoodMotor.set(TalonSRXControlMode.PercentOutput, speed);
   }
 
   public void setHoodPosition(double angle) {
     angle = MathUtil.clamp(angle, 20, 40);
-    m_hoodMotor.set(TalonSRXControlMode.MotionMagic, 0);
+
+    m_hoodMotor.set(TalonSRXControlMode.MotionMagic, angle);
   }
 
   public void setTurretSpeed(double speed) {
@@ -113,6 +215,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftFlywheelMotor.stopMotor();
     m_rightFlywheelMotor.stopMotor();
     m_turretMotor.stopMotor();
+    m_hoodMotor.set(ControlMode.MotionMagic, 0.0);
     m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.0);
   }
 

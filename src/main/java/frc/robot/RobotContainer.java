@@ -39,7 +39,7 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterSubsystem.initializeHardware(), 
                                                                            Constants.HOOD_MOTOR_CONFIG, 
                                                                            Constants.FLYWHEEL_CONFIG, 
-                                                                           Constants.TURRET_CONFIG);
+                                                                           Constants.TURRET_CONFIG, Constants.SHOOTER_VISION_MAP);
 
   private final XboxController m_controller = new XboxController(0);
 
