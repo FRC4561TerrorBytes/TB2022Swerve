@@ -58,7 +58,8 @@ public class RobotContainer {
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            false
     ));
 
     // Configure the button bindings
@@ -102,10 +103,10 @@ public class RobotContainer {
     primaryDPadDown.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setHoodSpeed(-0.3)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
-    primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(+0.1)))
-      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
-    primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(-0.1)))
-      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+    // primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(+0.1)))
+    //   .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+    // primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(-0.1)))
+    //   .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
   }
 

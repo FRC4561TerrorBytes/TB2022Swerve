@@ -84,14 +84,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private SparkMaxPIDController m_leftPIDController;
   private SparkMaxPIDController m_rightPIDController;
+  private SparkMaxPIDController m_turretPIDController;
 
   private SparkPIDConfig m_leftFlywheelConfig;
   private SparkPIDConfig m_rightFlywheelConfig;
   private SparkPIDConfig m_turretConfig;
   private TalonPIDConfig m_hoodConfig;
-
-  private double m_minDistance;
-  private double m_maxDistance;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig, SparkPIDConfig flywheelConfig, SparkPIDConfig turretConfig) {
@@ -111,6 +109,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     this.m_leftPIDController = m_leftFlywheelMotor.getPIDController();
     this.m_rightPIDController = m_rightFlywheelMotor.getPIDController();
+    this.m_turretPIDController = m_turretMotor.getPIDController();
     
     m_leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
@@ -146,8 +145,9 @@ public class ShooterSubsystem extends SubsystemBase {
     m_turretMotor.set(speed);
   }
 
-  public void setTurretPosition(double angle) {
-    
+  public void setTurretDelta(double angleDelta) {
+    double currentAngle = m_turretMotor.getEncoder().getPosition();
+    m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kSmartMotion);
   }
 
   public void stop() {

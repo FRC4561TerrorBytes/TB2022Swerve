@@ -12,15 +12,18 @@ public class DefaultDriveCommand extends CommandBase {
     private final DoubleSupplier m_translationXSupplier;
     private final DoubleSupplier m_translationYSupplier;
     private final DoubleSupplier m_rotationSupplier;
+    private final boolean m_fieldOriented;
 
     public DefaultDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                DoubleSupplier translationXSupplier,
                                DoubleSupplier translationYSupplier,
-                               DoubleSupplier rotationSupplier) {
+                               DoubleSupplier rotationSupplier,
+                               boolean fieldOriented) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
         this.m_rotationSupplier = rotationSupplier;
+        this.m_fieldOriented = fieldOriented;
 
         addRequirements(drivetrainSubsystem);
     }
@@ -29,16 +32,17 @@ public class DefaultDriveCommand extends CommandBase {
     public void execute() {
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
         m_drivetrainSubsystem.drive(
-                // new ChassisSpeeds(
-                //     m_translationXSupplier.getAsDouble(),
-                //     m_translationYSupplier.getAsDouble(),
-                //     m_rotationSupplier.getAsDouble()
-                // )
-                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                         m_translationXSupplier.getAsDouble(),
-                         m_translationYSupplier.getAsDouble(),
-                        m_rotationSupplier.getAsDouble(),
-                        m_drivetrainSubsystem.getGyroscopeRotation()
+                m_fieldOriented ?
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    m_translationXSupplier.getAsDouble(),
+                    m_translationYSupplier.getAsDouble(),
+                    m_rotationSupplier.getAsDouble(),
+                    m_drivetrainSubsystem.getGyroscopeRotation()
+                ) :
+                new ChassisSpeeds(
+                    m_translationXSupplier.getAsDouble(),
+                    m_translationYSupplier.getAsDouble(),
+                    m_rotationSupplier.getAsDouble()
                 )
         );
     }

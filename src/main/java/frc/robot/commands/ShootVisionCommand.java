@@ -50,26 +50,31 @@ public class ShootVisionCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // Only run if target is valid
-        if (m_visionSubsystem.isTargetValid()) {
-            // Run flywheel based on distance from
+
+        double yawOffset = m_visionSubsystem.getYaw();
+        
+
+        if (m_visionSubsystem.isOnTarget()) {
             double dx = m_visionSubsystem.getDistance();
             double dy = Constants.TARGET_HEIGHT_METERS - Constants.CAMERA_HEIGHT_METERS;
 
             double theta = MathUtil.clamp(1 / dx * Constants.HOOD_ANGLE_SCALAR, 20, 40);
-            double velocity = velocityToTarget(theta, dx, dy);
+            double velocity = velocityToTarget(90 - theta, dx, dy);
             double rpm = metersPerSecondToRPM(velocity);
 
             System.out.println("Theta: " + theta + "Velocity: " + velocity + "RPM: " + rpm);
 
             m_shooterSubsystem.setFlywheelSpeed(rpm);
+            m_shooterSubsystem.setHoodPosition(theta);
 
             if (Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
-                m_feederSubsystem.feederShoot();
+                m_loops++;
+                if (m_loops >= m_loopNum) 
+                    m_feederSubsystem.feederShoot();
             } else {
+                m_loops = 0;
                 m_feederSubsystem.stop();
             }
-
         }
     }
 
