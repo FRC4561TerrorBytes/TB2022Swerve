@@ -19,11 +19,13 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShootVisionCommand;
 import frc.robot.commands.ZeroTurretCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,6 +42,7 @@ public class RobotContainer {
                                                                            Constants.HOOD_MOTOR_CONFIG, 
                                                                            Constants.FLYWHEEL_CONFIG, 
                                                                            Constants.TURRET_CONFIG);
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem(VisionSubsystem.initializeHardware(), Constants.CAMERA_HEIGHT_METERS, Constants.TARGET_HEIGHT_METERS, Constants.CAMERA_PITCH_DEGREES, 10);
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -88,6 +91,7 @@ public class RobotContainer {
     POVButton primaryDPadDown = new POVButton(m_controller, 180);
     POVButton primaryDPadLeft = new POVButton(m_controller, 270);
     Trigger primaryTriggerLeft = new Trigger(() -> m_controller.getLeftTriggerAxis() > 0.25);
+    Trigger primaryTriggerRight = new Trigger(() -> m_controller.getRightTriggerAxis() > 0.25);
 
     primaryButtonB.whenPressed(new ZeroTurretCommand(m_shooterSubsystem, m_intakeSubsystem));
     primaryButtonX.whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleArmPosition()));
@@ -95,18 +99,19 @@ public class RobotContainer {
     primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem, m_allianceColor));
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem, 2500));
+    primaryTriggerRight.whileActiveOnce(new ShootVisionCommand(m_drivetrainSubsystem, m_shooterSubsystem, m_feederSubsystem, m_visionSubsystem, 0.1));
 
-    primaryButtonA.whenPressed(new InstantCommand(() -> m_shooterSubsystem.setHoodPosition(30)));
+    primaryButtonA.whenPressed(new InstantCommand(() -> m_shooterSubsystem.setFlywheel(0.6))).whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop() ));
 
     primaryDPadUp.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setHoodSpeed(+0.3)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
     primaryDPadDown.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setHoodSpeed(-0.3)))
       .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
-    // primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(+0.1)))
-    //   .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
-    // primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(-0.1)))
-    //   .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+    primaryDPadRight.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(+0.1)))
+      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
+    primaryDPadLeft.whenHeld(new InstantCommand(() -> m_shooterSubsystem.setTurretSpeed(-0.1)))
+      .whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop()));
 
   }
 

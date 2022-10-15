@@ -18,9 +18,9 @@ public class VisionSubsystem extends SubsystemBase {
   public static class Hardware {
     private PhotonCamera pi, webcam;
 
-    public Hardware(PhotonCamera pi, PhotonCamera webcam) {
+    public Hardware(PhotonCamera pi) {
       this.pi = pi;
-      this.webcam = webcam;
+      // this.webcam = webcam;
     }
   }
 
@@ -65,7 +65,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public static Hardware initializeHardware() {
-    Hardware visionHardware = new Hardware(new PhotonCamera("photonvision"), new PhotonCamera("webcam"));
+    Hardware visionHardware = new Hardware(new PhotonCamera("photonvision"));
 
     return visionHardware;
   }
@@ -97,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase {
    */
   public void setDriverMode(boolean enable) {
     // webcam is always in driver mode
-    m_webcam.setDriverMode(true);
+    // m_webcam.setDriverMode(true);
 
     // only toggle pi
     m_pi.setDriverMode(enable);
@@ -165,6 +165,7 @@ public class VisionSubsystem extends SubsystemBase {
                                                                        m_cameraPitchRadians,
                                                                        Units.degreesToRadians(m_latestTarget.getPitch()));
         System.out.println("Vision distance: " + m_latestDistance);
+        // System.out.println("\t" + m_cameraHeightMeters + "\n\t" + m_targetHeightMeters + "\n\t" + m_cameraPitchRadians + "\n\t" + Units.degreesToRadians(m_latestTarget.getPitch()));
       } else m_latestDistance = 0.0;
     } else m_latestTarget = null;
 

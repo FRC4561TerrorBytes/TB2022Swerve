@@ -24,7 +24,7 @@ public final class Constants {
     public static final int FALCON_500_MAX_RPM = 6380;
     public static final int CTRE_TALONFX_ENCODER_TICKS_PER_ROTATION = 2048;
     public static final int NEO_MAX_RPM = 5676;
-    public static final int NEO_TICKS_PER_ROTATION = 42;
+    public static final int NEO_TICKS_PER_ROTATION = 4096;
 
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.6;
@@ -93,11 +93,11 @@ public final class Constants {
 
     public static final boolean FLYWHEEL_INVERT_MOTOR = true;
     public static final double FLYWHEEL_MAX_RPM = NEO_MAX_RPM;
-    public static final double FLYWHEEL_KP = 0.00018;
+    public static final double FLYWHEEL_KP = 0.0002;
     public static final double FLYWHEEL_KI = 0.0;
     public static final double FLYWHEEL_KD = 0.0006;
-    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.91;
-    public static final double FLYWHEEL_TOLERANCE = 20.0;
+    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.91 / 2;
+    public static final double FLYWHEEL_TOLERANCE = 40.0;
     public static final double FLYWHEEL_LOWER_LIMIT = 0;
     public static final double FLYWHEEL_UPPER_LIMIT = 0;
     public static final boolean FLYWHEEL_ENABLE_SOFT_LIMITS = false;
@@ -107,19 +107,19 @@ public final class Constants {
 
     public static final boolean TURRET_INVERT_MOTOR = true;
     public static final double TURRET_MAX_RPM = NEO_MAX_RPM;
-    public static final double TURRET_KP = 1.0;
+    public static final double TURRET_KP = 0.00008;
     public static final double TURRET_KI = 0.0;
-    public static final double TURRET_KD = 0.0;
+    public static final double TURRET_KD = 0.01;
     public static final double TURRET_MECHANICAL_EFFICIENCY = 1.0;
-    public static final double TURRET_TOLERANCE = 1.0;
-    public static final double TURRET_LOWER_LIMIT = -90;
-    public static final double TURRET_UPPER_LIMIT = 90;
+    public static final double TURRET_TOLERANCE = 2.5;
+    public static final double TURRET_LOWER_LIMIT = -45;
+    public static final double TURRET_UPPER_LIMIT = 45;
     public static final boolean TURRET_ENABLE_SOFT_LIMITS = true;
     public static final double TURRET_VELOCITY_RPM = NEO_MAX_RPM;
     public static final double TURRET_ACCELERATOIN_RPM_PER_SEC = NEO_MAX_RPM;
     public static final int TURRET_MOTION_SMOOTHING = 1;
-    public static final int TURRET_GEAR_RATIO = 168;
-    public static final int TURRET_CONVERSION_FACTOR = 1 / (NEO_TICKS_PER_ROTATION * TURRET_GEAR_RATIO / 360);
+    public static final int TURRET_GEAR_RATIO = 112 * 2 / 3;
+    public static final double TURRET_CONVERSION_FACTOR = 360.0 / TURRET_GEAR_RATIO;
 
     public static final TalonPIDConfig HOOD_MOTOR_CONFIG = new TalonPIDConfig(
             HOOD_MOTOR_SENSOR_PHASE,
@@ -169,22 +169,23 @@ public final class Constants {
             TURRET_MOTION_SMOOTHING,
             TURRET_CONVERSION_FACTOR);
 
-    public static final double CAMERA_HEIGHT_METERS = 0;
-    public static final double TARGET_HEIGHT_METERS = 0;
+    public static final double CAMERA_HEIGHT_METERS = 0.889;
+    public static final double TARGET_HEIGHT_METERS = 2.438;
     public static final double CAMERA_PITCH_DEGREES = 35;
 
     public static final double GRAVITY = 9.81;
     public static final double HOOD_ANGLE_SCALAR = 0;
     public static final double WHEEL_CIRCUMFERENCE_METERS = 0.0508 * 2 * Math.PI;
+    public static final double TARGET_DISTANCE_OFFSET = 1.0;
 
-    public static final SplineInterpolator SPLINE_INTERPOLATOR = new SplineInterpolator();
+    // public static final SplineInterpolator SPLINE_INTERPOLATOR = new SplineInterpolator();
 
-    public static final double[] FLYWHEEL_RPM_X = {};
-    public static final double[] FLYWHEEL_RPM_Y = {};
-    public static final PolynomialSplineFunction FLYWHEEL_RPM_CURVE = SPLINE_INTERPOLATOR.interpolate(FLYWHEEL_RPM_X, FLYWHEEL_RPM_X);
+    // public static final double[] FLYWHEEL_RPM_X = {};
+    // public static final double[] FLYWHEEL_RPM_Y = {};
+    // public static final PolynomialSplineFunction FLYWHEEL_RPM_CURVE = SPLINE_INTERPOLATOR.interpolate(FLYWHEEL_RPM_X, FLYWHEEL_RPM_X);
     
-    public static final double[] HOOD_ANGLE_X = {};
-    public static final double[] HOOD_ANGLE_Y = {};
-    public static final PolynomialSplineFunction HOOD_ANGLE_CURVE = SPLINE_INTERPOLATOR.interpolate(HOOD_ANGLE_X, HOOD_ANGLE_Y);
+    // public static final double[] HOOD_ANGLE_X = {};
+    // public static final double[] HOOD_ANGLE_Y = {};
+    // public static final PolynomialSplineFunction HOOD_ANGLE_CURVE = SPLINE_INTERPOLATOR.interpolate(HOOD_ANGLE_X, HOOD_ANGLE_Y);
     
 }

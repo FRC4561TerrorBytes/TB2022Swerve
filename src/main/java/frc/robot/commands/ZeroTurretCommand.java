@@ -34,24 +34,25 @@ public class ZeroTurretCommand extends CommandBase {
     farLimit = limitSwitches[0];
     closeLimit = limitSwitches[1];
 
-    m_shooterSubsystem.setTurretSpeed(0.15);
+    m_shooterSubsystem.setTurretSpeed(-0.15);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (farLimit.isPressed()) m_shooterSubsystem.setTurretSpeed(-0.15);
+    // if (farLimit.isPressed()) m_shooterSubsystem.setTurretSpeed(-0.15);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_shooterSubsystem.stop();
+    m_shooterSubsystem.resetTurretEncoder();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return closeLimit.isPressed();
+    return farLimit.isPressed();
   }
 }

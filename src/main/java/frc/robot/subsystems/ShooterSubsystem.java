@@ -122,13 +122,18 @@ public class ShooterSubsystem extends SubsystemBase {
     m_hoodMotor.setInverted(true);
   }
 
+  public void setFlywheel(double speed) {
+    m_leftFlywheelMotor.set(speed);
+    m_rightFlywheelMotor.set(speed);
+  }
+
   public void setFlywheelSpeed(double rpm) {
     m_leftPIDController.setReference(rpm, ControlType.kSmartVelocity);
     m_rightPIDController.setReference(rpm, ControlType.kSmartVelocity);
   }
 
   public double getFlywheelSpeed() {
-    return m_leftFlywheelMotor.getEncoder().getVelocity();
+    return m_rightFlywheelMotor.getEncoder().getVelocity();
   }
   
   public void setHoodSpeed(double speed) {
@@ -147,7 +152,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setTurretDelta(double angleDelta) {
     double currentAngle = m_turretMotor.getEncoder().getPosition();
+    if (Math.abs(angleDelta) < 0.5) return;
     m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kSmartMotion);
+  }
+
+  public void resetTurretEncoder() {
+    m_turretMotor.getEncoder().setPosition(-2.2);
   }
 
   public void stop() {

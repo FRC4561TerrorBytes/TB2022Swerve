@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -39,7 +41,7 @@ public class ShootVisionCommand extends CommandBase {
         this.m_loopNum = (int) Math.round(delay / (1.0 / 60.0));
 
         // Use addRequirements() here to declare subsystem dependencies
-        addRequirements(m_driveSubsystem, m_shooterSubsystem, m_visionSubsystem);
+        addRequirements(m_shooterSubsystem, m_visionSubsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -52,22 +54,26 @@ public class ShootVisionCommand extends CommandBase {
     public void execute() {
 
         double yawOffset = m_visionSubsystem.getYaw();
-        
+        if (Math.abs(yawOffset) > Constants.TURRET_TOLERANCE) {
+            m_shooterSubsystem.setTurretDelta(yawOffset);
+        } else {
+            m_shooterSubsystem.setTurretSpeed(0.0);
+        }
 
-        if (m_visionSubsystem.isOnTarget()) {
-            double dx = m_visionSubsystem.getDistance();
+        if (m_visionSubsystem.isTargetValid()) {
             double dy = Constants.TARGET_HEIGHT_METERS - Constants.CAMERA_HEIGHT_METERS;
+            double dx = m_visionSubsystem.getDistance() + Constants.TARGET_DISTANCE_OFFSET;
 
             double theta = MathUtil.clamp(1 / dx * Constants.HOOD_ANGLE_SCALAR, 20, 40);
-            double velocity = velocityToTarget(90 - theta, dx, dy);
+            double velocity = velocityToTarget(Units.degreesToRadians(90 - theta), dx, dy);
             double rpm = metersPerSecondToRPM(velocity);
 
-            System.out.println("Theta: " + theta + "Velocity: " + velocity + "RPM: " + rpm);
+            // System.out.println("dx" + dx + " Theta: " + theta + " Velocity: " + velocity + " RPM: " + rpm);
 
             m_shooterSubsystem.setFlywheelSpeed(rpm);
             m_shooterSubsystem.setHoodPosition(theta);
 
-            if (Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
+            if (m_visionSubsystem.isOnTarget() && Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
                 m_loops++;
                 if (m_loops >= m_loopNum) 
                     m_feederSubsystem.feederShoot();
@@ -87,7 +93,7 @@ public class ShootVisionCommand extends CommandBase {
     }
 
     public double metersPerSecondToRPM(double mps) {
-        return 60 / Constants.WHEEL_CIRCUMFERENCE_METERS * mps;
+        return 60 / Constants.WHEEL_CIRCUMFERENCE_METERS * mps * 2;
     }
 
     // Called once the command ends or is interrupted.
