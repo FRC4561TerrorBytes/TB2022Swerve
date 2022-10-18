@@ -5,17 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class ShootVisionCommand extends CommandBase {
-    private DrivetrainSubsystem m_driveSubsystem;
+    private DriveSubsystem m_driveSubsystem;
     private ShooterSubsystem m_shooterSubsystem;
     private VisionSubsystem m_visionSubsystem;
     private FeederSubsystem m_feederSubsystem;
@@ -31,7 +30,7 @@ public class ShootVisionCommand extends CommandBase {
      * @param delay            shoot delay in seconds
      * @param odometry         whether to update drive odometry or not
      */
-    public ShootVisionCommand(DrivetrainSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem,
+    public ShootVisionCommand(DriveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem,
             FeederSubsystem feederSubsystem,
             VisionSubsystem visionSubsystem, double delay) {
         this.m_driveSubsystem = driveSubsystem;
@@ -52,15 +51,15 @@ public class ShootVisionCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-
-        double yawOffset = m_visionSubsystem.getYaw();
-        if (Math.abs(yawOffset) > Constants.TURRET_TOLERANCE) {
-            m_shooterSubsystem.setTurretDelta(yawOffset);
-        } else {
-            m_shooterSubsystem.setTurretSpeed(0.0);
-        }
-
         if (m_visionSubsystem.isTargetValid()) {
+
+            double yawOffset = m_visionSubsystem.getYaw();
+            if (Math.abs(yawOffset) > Constants.TURRET_TOLERANCE) {
+                // m_shooterSubsystem.setTurretDelta(yawOffset);
+            } else {
+                m_shooterSubsystem.setTurretSpeed(0.0);
+            }
+
             double dy = Constants.TARGET_HEIGHT_METERS - Constants.CAMERA_HEIGHT_METERS;
             double dx = m_visionSubsystem.getDistance() + Constants.TARGET_DISTANCE_OFFSET;
 

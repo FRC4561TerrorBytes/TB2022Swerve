@@ -18,9 +18,9 @@ public class VisionSubsystem extends SubsystemBase {
   public static class Hardware {
     private PhotonCamera pi, webcam;
 
-    public Hardware(PhotonCamera pi) {
+    public Hardware(PhotonCamera pi, PhotonCamera webcam) {
       this.pi = pi;
-      // this.webcam = webcam;
+      this.webcam = webcam;
     }
   }
 
@@ -65,7 +65,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public static Hardware initializeHardware() {
-    Hardware visionHardware = new Hardware(new PhotonCamera("photonvision"));
+    Hardware visionHardware = new Hardware(new PhotonCamera("photonvision"), new PhotonCamera("webcam"));
 
     return visionHardware;
   }
@@ -81,7 +81,7 @@ public class VisionSubsystem extends SubsystemBase {
    * Initialize VisionSubsystem
    */
   public void initialize() {
-    setDriverMode(false);
+    setDriverMode(true);
   }
 
   /**
@@ -97,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase {
    */
   public void setDriverMode(boolean enable) {
     // webcam is always in driver mode
-    // m_webcam.setDriverMode(true);
+    m_webcam.setDriverMode(true);
 
     // only toggle pi
     m_pi.setDriverMode(enable);

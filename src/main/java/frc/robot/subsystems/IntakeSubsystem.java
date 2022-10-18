@@ -5,18 +5,17 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.ColorSensorV3;
+import com.revrobotics.SparkMaxLimitSwitch;
 
-import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import com.revrobotics.ColorSensorV3;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase {
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
@@ -81,8 +80,9 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void outtake() {
-    if (m_leftSolenoid.get())
-      m_feederMotor.set(+Constants.INTAKE_SPEED);
+    armUp();
+    // if (m_leftSolenoid.get())
+    //   m_feederMotor.set(+Constants.INTAKE_SPEED);
   }
 
   public void stop() {
@@ -96,6 +96,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (m_leftSolenoid.get())
+      m_feederMotor.set(+Constants.INTAKE_SPEED);
+    else m_feederMotor.set(0.0);
     // This method will be called once per scheduler run
     Color detectedColor = m_colorSensor.getColor();
     SmartDashboard.putNumber("Blue", detectedColor.blue);

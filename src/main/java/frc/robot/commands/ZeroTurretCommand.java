@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import com.revrobotics.SparkMaxLimitSwitch;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -40,7 +41,8 @@ public class ZeroTurretCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // if (farLimit.isPressed()) m_shooterSubsystem.setTurretSpeed(-0.15);
+    // SmartDashboard.putBoolean("Far", farLimit.isPressed());
+    // if (closeLimit.isPressed()) m_shooterSubsystem.setTurretSpeed(0.15);
   }
 
   // Called once the command ends or is interrupted.
@@ -48,6 +50,7 @@ public class ZeroTurretCommand extends CommandBase {
   public void end(boolean interrupted) {
     m_shooterSubsystem.stop();
     m_shooterSubsystem.resetTurretEncoder();
+    // m_shooterSubsystem.setTurretDelta(2.2);
   }
 
   // Returns true when the command should end.

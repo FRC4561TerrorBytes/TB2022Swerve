@@ -63,7 +63,7 @@ public final class Constants {
     public static final int RIGHT_SOLENOID = 0;
 
     public static final double INTAKE_SPEED = 0.6;
-    public static final double FEEDER_SPEED = 0.5;
+    public static final double FEEDER_SPEED = 0.75;
 
     public static final int FEEDER_LOWER_MOTOR = 11;
     public static final int FEEDER_MIDDLE_MOTOR = 10;
@@ -96,7 +96,7 @@ public final class Constants {
     public static final double FLYWHEEL_KP = 0.0002;
     public static final double FLYWHEEL_KI = 0.0;
     public static final double FLYWHEEL_KD = 0.0006;
-    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.91 / 2;
+    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.92;
     public static final double FLYWHEEL_TOLERANCE = 40.0;
     public static final double FLYWHEEL_LOWER_LIMIT = 0;
     public static final double FLYWHEEL_UPPER_LIMIT = 0;
@@ -111,7 +111,7 @@ public final class Constants {
     public static final double TURRET_KI = 0.0;
     public static final double TURRET_KD = 0.01;
     public static final double TURRET_MECHANICAL_EFFICIENCY = 1.0;
-    public static final double TURRET_TOLERANCE = 2.5;
+    public static final double TURRET_TOLERANCE = 1.0;
     public static final double TURRET_LOWER_LIMIT = -45;
     public static final double TURRET_UPPER_LIMIT = 45;
     public static final boolean TURRET_ENABLE_SOFT_LIMITS = true;

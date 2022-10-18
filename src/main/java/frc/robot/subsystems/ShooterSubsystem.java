@@ -152,7 +152,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setTurretDelta(double angleDelta) {
     double currentAngle = m_turretMotor.getEncoder().getPosition();
-    if (Math.abs(angleDelta) < 0.5) return;
+    if (Math.abs(angleDelta) < Constants.TURRET_TOLERANCE) return;
     m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kSmartMotion);
   }
 
@@ -172,5 +172,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Flywheel sped", getFlywheelSpeed());
+    SmartDashboard.putNumber("Turret position", m_turretMotor.getEncoder().getPosition());
   }
 }
