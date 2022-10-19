@@ -66,8 +66,7 @@ public class RobotContainer {
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_primaryController.getLeftY()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getLeftX()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            true
+            () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
     ));
 
     m_autommodeChooser.setDefaultOption("Do nothing", null);

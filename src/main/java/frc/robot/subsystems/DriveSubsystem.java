@@ -102,8 +102,8 @@ public class DriveSubsystem extends SubsystemBase {
     // Your module has two NEOs on it. One for steering and one for driving.
     //
     // Your module has a Falcon 500 and a NEO on it. The Falcon 500 is for driving
-    // and t
-    // Mk3SwerveModuleHelper.createFalcon500Neo(...)he NEO is for steering.
+    // and the NEO is for steering.
+    // Mk3SwerveModuleHelper.createFalcon500Neo(...)
     //
     // Mk3SwerveModuleHelper.createNeoFalcon500(...)
     // Your module has a NEO and a Falcon 500 on it. The NEO is for driving and the
