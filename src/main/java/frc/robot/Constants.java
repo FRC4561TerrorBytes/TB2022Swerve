@@ -57,6 +57,11 @@ public final class Constants {
     // back
     // right steer offset
 
+    public static final double DRIVE_CURRENT_LIMIT = 60.0; 
+    public static final double TURN_CURRENT_LIMIT = 20.0;
+    //current limits for drivetrain turn and steer motors
+    // (Amps)
+
     public static final int INTAKE_ROLLER_MOTOR = 12;
     public static final int PCM = 20;
     public static final int LEFT_SOLENOID = 1;
