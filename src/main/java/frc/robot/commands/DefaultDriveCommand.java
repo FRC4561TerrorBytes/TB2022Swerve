@@ -16,9 +16,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public class DefaultDriveCommand extends CommandBase {
     private final DriveSubsystem m_drivetrainSubsystem;
 
-    private final DoubleSupplier m_translationXSupplier;
-    private final DoubleSupplier m_translationYSupplier;
-    private final DoubleSupplier m_rotationSupplier;
+    private final double m_translationXSupplier;
+    private final double m_translationYSupplier;
+    private final Rotation2d m_rotationSupplier;
 
     private final HolonomicDriveController m_holonomicDriveController = 
         new HolonomicDriveController(
@@ -27,9 +27,9 @@ public class DefaultDriveCommand extends CommandBase {
             new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
 
     public DefaultDriveCommand(DriveSubsystem drivetrainSubsystem,
-                               DoubleSupplier translationXSupplier,
-                               DoubleSupplier translationYSupplier,
-                               DoubleSupplier rotationSupplier) {
+                               double translationXSupplier,
+                               double translationYSupplier,
+                               Rotation2d rotationSupplier) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
@@ -43,9 +43,10 @@ public class DefaultDriveCommand extends CommandBase {
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
         m_drivetrainSubsystem.drive(
                 m_holonomicDriveController.calculate(
-                    new Pose2d(0, 0, m_drivetrainSubsystem.getGyroscopeRotation()),
-                    new Trajectory.State(), // ???
-                    Rotation2d.fromDegrees(0)
+                    m_drivetrainSubsystem.m_odometry.getPoseMeters(),
+                    m_drivetrainSubsystem.m_odometry.getPoseMeters(),
+                    1,
+                    m_rotationSupplier
                 )
         );
         // if (m_translationXSupplier.getAsDouble() == 0 && m_translationYSupplier.getAsDouble() == 0 && m_rotationSupplier.getAsDouble() == 0) {

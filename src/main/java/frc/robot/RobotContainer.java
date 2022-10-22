@@ -28,6 +28,7 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -64,9 +65,9 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
-            () -> -modifyAxis(m_primaryController.getLeftY()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_primaryController.getLeftX()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            -modifyLeftAxis(m_primaryController.getLeftY()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            -modifyLeftAxis(m_primaryController.getLeftX()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            calculateRotation(m_primaryController, m_drivetrainSubsystem)
     ));
 
     m_autommodeChooser.setDefaultOption("Do nothing", null);
@@ -75,6 +76,8 @@ public class RobotContainer {
     m_autommodeChooser.addOption("Taxi back left", new TaxiCommand(m_drivetrainSubsystem, -1));
 
     SmartDashboard.putData(m_autommodeChooser);
+    SmartDashboard.putString("current roation", m_drivetrainSubsystem.getGyroscopeRotation().toString());
+    SmartDashboard.putString("intended rotation", calculateRotation(m_primaryController, m_drivetrainSubsystem).toString());
 
     m_shooterSubsystem.resetTurretEncoder();
 
@@ -166,7 +169,7 @@ public class RobotContainer {
     }
   }
 
-  private static double modifyAxis(double value) {
+  private static double modifyLeftAxis(double value) {
     // Deadband
     value = deadband(value, 0.05);
 
@@ -174,5 +177,19 @@ public class RobotContainer {
     value = Math.copySign(value * value * value, value);
 
     return value * 0.6;
+  }
+
+  private static double modifyRightAxis(double value) {
+    // Deadband
+    value = deadband(value, 0.3);
+
+    return value;
+  }
+
+  private static Rotation2d calculateRotation(XboxController m_primaryController, DriveSubsystem m_drivetrainSubsystem) {
+    var x = modifyRightAxis(m_primaryController.getRightX());
+    var y = modifyRightAxis(m_primaryController.getRightY());
+    if (x == 0 && y == 0) return m_drivetrainSubsystem.getGyroscopeRotation();
+    return new Rotation2d(x, y);
   }
 }
