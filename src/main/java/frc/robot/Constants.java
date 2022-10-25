@@ -26,13 +26,14 @@ public final class Constants {
     public static final int NEO_MAX_RPM = 5676;
     public static final int NEO_TICKS_PER_ROTATION = 4096;
 
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.9;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.6;
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 6;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 23;
     public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(127.0); // FIXM E Measure and set
+    public static final int test = 90;
     // front
     // left steer offset
 
