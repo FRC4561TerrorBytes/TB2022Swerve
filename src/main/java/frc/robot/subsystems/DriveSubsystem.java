@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -118,12 +119,21 @@ public class DriveSubsystem extends SubsystemBase {
     // By default we will use Falcon 500s in standard configuration. But if you use
     // a different configuration or motors
     // you MUST change it. If you do not, your code will crash on startup.
+
+    //Set Drive and Turn Motor Current Limits
+    Mk4ModuleConfiguration m_moduleConfig = new Mk4ModuleConfiguration();
+     m_moduleConfig.setDriveCurrentLimit(Constants.DRIVE_CURRENT_LIMIT);
+     m_moduleConfig.setSteerCurrentLimit(Constants.TURN_CURRENT_LIMIT);
+
     m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
         // This parameter is optional, but will allow you to see the current state of
         // the module on the dashboard.
         tab.getLayout("Front Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(0, 0),
+        //Mk4ModuleConfiguration w/ current limits and nominal voltage defined above
+            //Defaults -> Drive Motors - 80, Turn Motors - 20, Nominal Voltage - 12.0
+        m_moduleConfig,
         // This can either be STANDARD or FAST depending on your gear configuration
         Mk4iSwerveModuleHelper.GearRatio.L2,
         // This is the ID of the drive motor
@@ -141,6 +151,7 @@ public class DriveSubsystem extends SubsystemBase {
         tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
+        m_moduleConfig,
         Mk4iSwerveModuleHelper.GearRatio.L2,
         Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
         Constants.FRONT_RIGHT_MODULE_STEER_MOTOR,
@@ -151,6 +162,7 @@ public class DriveSubsystem extends SubsystemBase {
         tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
+        m_moduleConfig,
         Mk4iSwerveModuleHelper.GearRatio.L2,
         Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
         Constants.BACK_LEFT_MODULE_STEER_MOTOR,
@@ -161,6 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
         tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
+        m_moduleConfig,
         Mk4iSwerveModuleHelper.GearRatio.L2,
         Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
         Constants.BACK_RIGHT_MODULE_STEER_MOTOR,

@@ -164,14 +164,14 @@ public class ShooterSubsystem extends SubsystemBase {
     m_leftFlywheelMotor.stopMotor();
     m_rightFlywheelMotor.stopMotor();
     m_turretMotor.stopMotor();
-    m_hoodMotor.set(ControlMode.MotionMagic, 0.0);
-    m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.0);
+    m_hoodMotor.set(ControlMode.MotionMagic, 0.1);
+    m_hoodMotor.set(TalonSRXControlMode.PercentOutput, 0.1);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Flywheel sped", getFlywheelSpeed());
+    SmartDashboard.putNumber("Flywheel speed", getFlywheelSpeed());
     SmartDashboard.putNumber("Turret position", m_turretMotor.getEncoder().getPosition());
   }
 }
