@@ -33,7 +33,8 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 6;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 23;
     public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(127.0); // FIXM E Measure and set
-    public static final int test = 90;
+    public static final boolean sadge = true;
+    public static final int pure = 15;
     // front
     // left steer offset
 
