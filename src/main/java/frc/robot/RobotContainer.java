@@ -157,6 +157,14 @@ public class RobotContainer {
     return m_autommodeChooser.getSelected();
   }
 
+  public int FOOT(int f){
+    System.out.println("your a foot toe");
+    System.out.println("you ate " + f + " apples today");
+    int foo = 5;
+    int boo = 70;
+    return foo + boo;
+  }
+
   private static double deadband(double value, double deadband) {
     if (Math.abs(value) > deadband) {
       if (value > 0.0) {
