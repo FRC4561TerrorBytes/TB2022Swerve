@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -55,7 +56,7 @@ public class ShootVisionCommand extends CommandBase {
 
             double yawOffset = m_visionSubsystem.getYaw();
             if (Math.abs(yawOffset) > Constants.TURRET_TOLERANCE) {
-                // m_shooterSubsystem.setTurretDelta(yawOffset);
+                m_shooterSubsystem.setTurretDelta(yawOffset);
             } else {
                 m_shooterSubsystem.setTurretSpeed(0.0);
             }
@@ -72,7 +73,7 @@ public class ShootVisionCommand extends CommandBase {
             m_shooterSubsystem.setFlywheelSpeed(rpm);
             m_shooterSubsystem.setHoodPosition(theta);
 
-            if (m_visionSubsystem.isOnTarget() && Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
+            if (/*m_visionSubsystem.isOnTarget() && */Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
                 m_loops++;
                 if (m_loops >= m_loopNum) 
                     m_feederSubsystem.feederShoot();

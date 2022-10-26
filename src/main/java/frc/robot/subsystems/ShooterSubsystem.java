@@ -171,7 +171,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Flywheel sped", getFlywheelSpeed());
+    SmartDashboard.putNumber("Flywheel speed", getFlywheelSpeed());
     SmartDashboard.putNumber("Turret position", m_turretMotor.getEncoder().getPosition());
   }
 }
