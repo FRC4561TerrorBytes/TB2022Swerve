@@ -64,7 +64,7 @@ public class ShootVisionCommand extends CommandBase {
             double dy = Constants.TARGET_HEIGHT_METERS - Constants.CAMERA_HEIGHT_METERS;
             double dx = m_visionSubsystem.getDistance() + Constants.TARGET_DISTANCE_OFFSET;
 
-            double theta = MathUtil.clamp(1 / dx * Constants.HOOD_ANGLE_SCALAR, 20, 40);
+            double theta = MathUtil.clamp(/*Math.log10(dx-4)* Constants.HOOD_ANGLE_SCALAR*20+20*/0 , 20, 40);
             double velocity = velocityToTarget(Units.degreesToRadians(90 - theta), dx, dy);
             double rpm = metersPerSecondToRPM(velocity);
 
@@ -73,7 +73,7 @@ public class ShootVisionCommand extends CommandBase {
             m_shooterSubsystem.setFlywheelSpeed(rpm);
             m_shooterSubsystem.setHoodPosition(theta);
 
-            if (/*m_visionSubsystem.isOnTarget() && */Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
+            if (m_visionSubsystem.isOnTarget() && Math.abs(m_shooterSubsystem.getFlywheelSpeed() - rpm) < Constants.FLYWHEEL_TOLERANCE) {
                 m_loops++;
                 if (m_loops >= m_loopNum) 
                     m_feederSubsystem.feederShoot();

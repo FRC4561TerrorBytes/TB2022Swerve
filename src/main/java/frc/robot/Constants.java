@@ -102,7 +102,7 @@ public final class Constants {
     public static final double FLYWHEEL_KI = 0.0;
     public static final double FLYWHEEL_KD = 0.0006;
     public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.92;
-    public static final double FLYWHEEL_TOLERANCE = 400.0;
+    public static final double FLYWHEEL_TOLERANCE = 40.0;
     public static final double FLYWHEEL_LOWER_LIMIT = 0;
     public static final double FLYWHEEL_UPPER_LIMIT = 0;
     public static final boolean FLYWHEEL_ENABLE_SOFT_LIMITS = false;
@@ -179,7 +179,7 @@ public final class Constants {
     public static final double CAMERA_PITCH_DEGREES = 35;
 
     public static final double GRAVITY = 9.81;
-    public static final double HOOD_ANGLE_SCALAR = 0;
+    public static final double HOOD_ANGLE_SCALAR = 1/1.3;
     public static final double WHEEL_CIRCUMFERENCE_METERS = 0.0508 * 2 * Math.PI;
     public static final double TARGET_DISTANCE_OFFSET = 1.0;
 
