@@ -64,9 +64,13 @@ public class ShootVisionCommand extends CommandBase {
             double dy = Constants.TARGET_HEIGHT_METERS - Constants.CAMERA_HEIGHT_METERS;
             double dx = m_visionSubsystem.getDistance() + Constants.TARGET_DISTANCE_OFFSET;
 
-            double theta = MathUtil.clamp(/*Math.log10(dx-4)* Constants.HOOD_ANGLE_SCALAR*20+20*/0 , 20, 40);
+            double theta = MathUtil.clamp(Constants.HOOD_ANGLE_CURVE.value(dx), 20, 40);
+
+            SmartDashboard.putNumber("Theta", theta);
             double velocity = velocityToTarget(Units.degreesToRadians(90 - theta), dx, dy);
-            double rpm = metersPerSecondToRPM(velocity);
+            double rpm = metersPerSecondToRPM(velocity) * Constants.RPM_SCALAR;
+            SmartDashboard.putNumber("Target RPM", rpm);
+            SmartDashboard.putNumber("Vision Distance", dx);
 
             // System.out.println("dx" + dx + " Theta: " + theta + " Velocity: " + velocity + " RPM: " + rpm);
 

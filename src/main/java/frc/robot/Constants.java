@@ -68,7 +68,7 @@ public final class Constants {
     public static final int RIGHT_SOLENOID = 0;
 
     public static final double INTAKE_SPEED = 0.6;
-    public static final double FEEDER_SPEED = 0.75;
+    public static final double FEEDER_SPEED = 0.5;
 
     public static final int FEEDER_LOWER_MOTOR = 11;
     public static final int FEEDER_MIDDLE_MOTOR = 10;
@@ -79,6 +79,7 @@ public final class Constants {
     public static final int RIGHT_FLYWHEEL_MOTOR = 15;
     public static final int TURRET_MOTOR = 13;
     public static final int HOOD_MOTOR = 14;
+    public static final double RPM_SCALAR = 1;
 
     public static final boolean HOOD_MOTOR_SENSOR_PHASE = false;
     public static final boolean HOOD_INVERT_MOTOR = true;
@@ -101,14 +102,15 @@ public final class Constants {
     public static final double FLYWHEEL_KP = 0.0002;
     public static final double FLYWHEEL_KI = 0.0;
     public static final double FLYWHEEL_KD = 0.0006;
-    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.92;
-    public static final double FLYWHEEL_TOLERANCE = 40.0;
+    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.93;
+    public static final double FLYWHEEL_TOLERANCE = 50.0;
     public static final double FLYWHEEL_LOWER_LIMIT = 0;
     public static final double FLYWHEEL_UPPER_LIMIT = 0;
     public static final boolean FLYWHEEL_ENABLE_SOFT_LIMITS = false;
     public static final double FLYWHEEL_VELOCITY_RPM = NEO_MAX_RPM;
     public static final double FLYWHEEL_ACCELERATOIN_RPM_PER_SEC = NEO_MAX_RPM;
     public static final int FLYWHEEL_MOTION_SMOOTHING = 1;
+    public static final double FLYWHEEL_IDLE_PERCENT = 0.2;
 
     public static final boolean TURRET_INVERT_MOTOR = true;
     public static final double TURRET_MAX_RPM = NEO_MAX_RPM;
@@ -183,14 +185,14 @@ public final class Constants {
     public static final double WHEEL_CIRCUMFERENCE_METERS = 0.0508 * 2 * Math.PI;
     public static final double TARGET_DISTANCE_OFFSET = 1.0;
 
-    // public static final SplineInterpolator SPLINE_INTERPOLATOR = new SplineInterpolator();
+    public static final SplineInterpolator SPLINE_INTERPOLATOR = new SplineInterpolator();
 
     // public static final double[] FLYWHEEL_RPM_X = {};
     // public static final double[] FLYWHEEL_RPM_Y = {};
     // public static final PolynomialSplineFunction FLYWHEEL_RPM_CURVE = SPLINE_INTERPOLATOR.interpolate(FLYWHEEL_RPM_X, FLYWHEEL_RPM_X);
     
-    // public static final double[] HOOD_ANGLE_X = {};
-    // public static final double[] HOOD_ANGLE_Y = {};
-    // public static final PolynomialSplineFunction HOOD_ANGLE_CURVE = SPLINE_INTERPOLATOR.interpolate(HOOD_ANGLE_X, HOOD_ANGLE_Y);
+    public static final double[] HOOD_ANGLE_X = {2, 4.2, 6.4};
+    public static final double[] HOOD_ANGLE_Y = {20, 30, 40};
+    public static final PolynomialSplineFunction HOOD_ANGLE_CURVE = SPLINE_INTERPOLATOR.interpolate(HOOD_ANGLE_X, HOOD_ANGLE_Y);
     
 }

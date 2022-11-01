@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 //import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -69,6 +70,9 @@ public class RobotContainer {
             () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
             true
     ));
+
+    // m_shooterSubsystem.setDefaultCommand(new RunCommand( () -> {m_shooterSubsystem.setFlywheel(Constants.FLYWHEEL_IDLE_PERCENT);}
+    // , m_shooterSubsystem));
 
     m_autommodeChooser.setDefaultOption("Do nothing", null);
     m_autommodeChooser.addOption("Taxi back", new TaxiCommand(m_drivetrainSubsystem, 0));

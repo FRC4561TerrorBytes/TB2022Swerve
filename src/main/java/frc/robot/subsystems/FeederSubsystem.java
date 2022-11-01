@@ -92,7 +92,7 @@ public class FeederSubsystem extends SubsystemBase {
     m_middleFeederSensor.enableLimitSwitch(false);
 
     m_lowerFeederMotor.set(Constants.FEEDER_SPEED);
-    m_middleFeederMotor.set(Constants.FEEDER_SPEED);
+    m_middleFeederMotor.set(Constants.FEEDER_SPEED / 2);
     m_upperFeederMotor.set(0.0);
   }
 

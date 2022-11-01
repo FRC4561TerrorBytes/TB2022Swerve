@@ -63,8 +63,8 @@ public class IntakeCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // m_intakeSubsystem.stop();
-    // m_feederSubsystem.stop();
+    m_intakeSubsystem.stop();
+    m_feederSubsystem.stop();
   }
 
   // Returns true when the command should end.

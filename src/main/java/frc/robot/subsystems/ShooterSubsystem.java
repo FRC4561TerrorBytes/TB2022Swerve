@@ -127,6 +127,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.set(speed);
   }
 
+  
   public void setFlywheelSpeed(double rpm) {
     m_leftPIDController.setReference(rpm, ControlType.kSmartVelocity);
     m_rightPIDController.setReference(rpm, ControlType.kSmartVelocity);
