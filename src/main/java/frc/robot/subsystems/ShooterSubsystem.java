@@ -4,22 +4,16 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -154,7 +148,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setTurretDelta(double angleDelta) {
     double currentAngle = m_turretMotor.getEncoder().getPosition();
     if (Math.abs(angleDelta) < Constants.TURRET_TOLERANCE) return;
-    m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kSmartMotion);
+    m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kPosition);
   }
 
   public void resetTurretEncoder() {

@@ -24,7 +24,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private final double MAX_TOLERANCE = 3.0;
+  private final double MAX_TOLERANCE = 2.0;
   private final double MIN_TOLERANCE = 1.0;
   private final int VISION_PIPELINE_INDEX = 0;
 

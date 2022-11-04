@@ -9,13 +9,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class ShootVisionCommand extends CommandBase {
-    private DriveSubsystem m_driveSubsystem;
     private ShooterSubsystem m_shooterSubsystem;
     private VisionSubsystem m_visionSubsystem;
     private FeederSubsystem m_feederSubsystem;
@@ -31,17 +29,16 @@ public class ShootVisionCommand extends CommandBase {
      * @param delay            shoot delay in seconds
      * @param odometry         whether to update drive odometry or not
      */
-    public ShootVisionCommand(DriveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem,
+    public ShootVisionCommand(ShooterSubsystem shooterSubsystem,
             FeederSubsystem feederSubsystem,
             VisionSubsystem visionSubsystem, double delay) {
-        this.m_driveSubsystem = driveSubsystem;
         this.m_shooterSubsystem = shooterSubsystem;
         this.m_feederSubsystem = feederSubsystem;
         this.m_visionSubsystem = visionSubsystem;
         this.m_loopNum = (int) Math.round(delay / (1.0 / 60.0));
 
         // Use addRequirements() here to declare subsystem dependencies
-        addRequirements(m_shooterSubsystem, m_visionSubsystem);
+        addRequirements(m_shooterSubsystem, m_feederSubsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -62,13 +59,13 @@ public class ShootVisionCommand extends CommandBase {
             }
 
             double dy = Constants.TARGET_HEIGHT_METERS - Constants.CAMERA_HEIGHT_METERS;
-            double dx = m_visionSubsystem.getDistance() + Constants.TARGET_DISTANCE_OFFSET;
+            double dx = m_visionSubsystem.getDistance() * Constants.SCALE_VISION_TO_METERS + Constants.TARGET_DISTANCE_OFFSET;
 
-            double theta = MathUtil.clamp(Constants.HOOD_ANGLE_CURVE.value(dx), 20, 40);
+            double theta = MathUtil.clamp(Constants.HOOD_ANGLE_CURVE.value(dx), 20, 35);
 
             SmartDashboard.putNumber("Theta", theta);
             double velocity = velocityToTarget(Units.degreesToRadians(90 - theta), dx, dy);
-            double rpm = metersPerSecondToRPM(velocity) * Constants.RPM_SCALAR;
+            double rpm = metersPerSecondToRPM(velocity);
             SmartDashboard.putNumber("Target RPM", rpm);
             SmartDashboard.putNumber("Vision Distance", dx);
 
@@ -90,7 +87,7 @@ public class ShootVisionCommand extends CommandBase {
 
     public double velocityToTarget(double theta, double dx, double dy) {
         try {
-            return dx * Math.sqrt(Constants.GRAVITY / (2 * dx * Math.tan(theta) - 2 * dy)) / Math.cos(theta);
+            return dx * Math.sqrt(Constants.GRAVITY / (2 * dx * Math.tan(theta) - 2 * dy)) / Math.cos(theta) + (dx - 2.5) * 0.12;
         } catch (Exception e) {
             return 0;
         }

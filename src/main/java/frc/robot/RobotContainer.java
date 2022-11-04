@@ -68,8 +68,10 @@ public class RobotContainer {
             () -> -modifyAxis(m_primaryController.getLeftY()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getLeftX()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            true
+            false
     ));
+
+    m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> m_intakeSubsystem.intakeSpeed(0.15), m_intakeSubsystem));
 
     // m_shooterSubsystem.setDefaultCommand(new RunCommand( () -> {m_shooterSubsystem.setFlywheel(Constants.FLYWHEEL_IDLE_PERCENT);}
     // , m_shooterSubsystem));
@@ -111,13 +113,13 @@ public class RobotContainer {
     Trigger primaryTriggerLeft = new Trigger(() -> m_primaryController.getLeftTriggerAxis() > 0.25);
     Trigger primaryTriggerRight = new Trigger(() -> m_primaryController.getRightTriggerAxis() > 0.25);
 
-    primaryButtonB.whenPressed(new ZeroTurretCommand(m_shooterSubsystem, m_intakeSubsystem));
+    // primaryButtonB.whenPressed(new ZeroTurretCommand(m_shooterSubsystem, m_intakeSubsystem));
     primaryButtonX.whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleArmPosition()));
     
     primaryButtonRBumper.whenHeld(new IntakeCommand(m_intakeSubsystem, m_feederSubsystem, m_allianceColor));
     primaryButtonLBumper.whenHeld(new OuttakeCommand(m_intakeSubsystem, m_feederSubsystem));
     primaryTriggerLeft.whileActiveOnce(new ShootCommand(m_shooterSubsystem, m_feederSubsystem, 2800));
-    primaryTriggerRight.whileActiveOnce(new ShootVisionCommand(m_drivetrainSubsystem, m_shooterSubsystem, m_feederSubsystem, m_visionSubsystem, 0.1));
+    primaryTriggerRight.whileActiveOnce(new ShootVisionCommand(m_shooterSubsystem, m_feederSubsystem, m_visionSubsystem, 0.15));
 
     // primaryButtonA.whenPressed(new InstantCommand(() -> m_shooterSubsystem.setFlywheel(0.3))).whenReleased(new InstantCommand(() -> m_shooterSubsystem.stop() ));
 

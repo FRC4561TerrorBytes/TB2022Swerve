@@ -79,7 +79,6 @@ public final class Constants {
     public static final int RIGHT_FLYWHEEL_MOTOR = 15;
     public static final int TURRET_MOTOR = 13;
     public static final int HOOD_MOTOR = 14;
-    public static final double RPM_SCALAR = 1;
 
     public static final boolean HOOD_MOTOR_SENSOR_PHASE = false;
     public static final boolean HOOD_INVERT_MOTOR = true;
@@ -93,7 +92,7 @@ public final class Constants {
     public static final double HOOD_LOWER_LIMIT = 0;
     public static final double HOOD_UPPER_LIMIT = 3900;
     public static final boolean HOOD_ENABLE_SOFT_LIMITS = true;
-    public static final double HOOD_VELOCITY_RPM = 100;
+    public static final double HOOD_VELOCITY_RPM = 500;
     public static final double HOOD_ACCELERATOIN_RPM_PER_SEC = HOOD_VELOCITY_RPM;
     public static final int HOOD_MOTION_SMOOTHING = 1;
 
@@ -102,8 +101,8 @@ public final class Constants {
     public static final double FLYWHEEL_KP = 0.0002;
     public static final double FLYWHEEL_KI = 0.0;
     public static final double FLYWHEEL_KD = 0.0006;
-    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.93;
-    public static final double FLYWHEEL_TOLERANCE = 50.0;
+    public static final double FLYWHEEL_MECHANICAL_EFFICIENCY = 0.94;
+    public static final double FLYWHEEL_TOLERANCE = 40.0;
     public static final double FLYWHEEL_LOWER_LIMIT = 0;
     public static final double FLYWHEEL_UPPER_LIMIT = 0;
     public static final boolean FLYWHEEL_ENABLE_SOFT_LIMITS = false;
@@ -114,13 +113,13 @@ public final class Constants {
 
     public static final boolean TURRET_INVERT_MOTOR = true;
     public static final double TURRET_MAX_RPM = NEO_MAX_RPM;
-    public static final double TURRET_KP = 0.00008;
+    public static final double TURRET_KP = 0.04;
     public static final double TURRET_KI = 0.0;
-    public static final double TURRET_KD = 0.01;
+    public static final double TURRET_KD = 0.001;
     public static final double TURRET_MECHANICAL_EFFICIENCY = 1.0;
     public static final double TURRET_TOLERANCE = 1.0;
-    public static final double TURRET_LOWER_LIMIT = -45;
-    public static final double TURRET_UPPER_LIMIT = 45;
+    public static final double TURRET_LOWER_LIMIT = -60;
+    public static final double TURRET_UPPER_LIMIT = 60;
     public static final boolean TURRET_ENABLE_SOFT_LIMITS = true;
     public static final double TURRET_VELOCITY_RPM = NEO_MAX_RPM;
     public static final double TURRET_ACCELERATOIN_RPM_PER_SEC = NEO_MAX_RPM;
@@ -183,6 +182,7 @@ public final class Constants {
     public static final double GRAVITY = 9.81;
     public static final double HOOD_ANGLE_SCALAR = 1/1.3;
     public static final double WHEEL_CIRCUMFERENCE_METERS = 0.0508 * 2 * Math.PI;
+    public static final double SCALE_VISION_TO_METERS = 0.93;
     public static final double TARGET_DISTANCE_OFFSET = 1.0;
 
     public static final SplineInterpolator SPLINE_INTERPOLATOR = new SplineInterpolator();
@@ -192,7 +192,7 @@ public final class Constants {
     // public static final PolynomialSplineFunction FLYWHEEL_RPM_CURVE = SPLINE_INTERPOLATOR.interpolate(FLYWHEEL_RPM_X, FLYWHEEL_RPM_X);
     
     public static final double[] HOOD_ANGLE_X = {2, 4.2, 6.4};
-    public static final double[] HOOD_ANGLE_Y = {20, 30, 40};
+    public static final double[] HOOD_ANGLE_Y = {15, 30, 50};
     public static final PolynomialSplineFunction HOOD_ANGLE_CURVE = SPLINE_INTERPOLATOR.interpolate(HOOD_ANGLE_X, HOOD_ANGLE_Y);
     
 }

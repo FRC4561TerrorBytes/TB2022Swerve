@@ -128,5 +128,6 @@ public class FeederSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Ball 1", !m_upperFeederSensor.get());
     SmartDashboard.putBoolean("Ball 2", m_middleFeederSensor.isPressed());
+    SmartDashboard.putBoolean("Ball 3", m_lowerFeederSensor.isPressed());
   }
 }

@@ -74,15 +74,18 @@ public class IntakeSubsystem extends SubsystemBase {
     setArmPosition(false);
   }
 
+  public void intakeSpeed(double speed) {
+    m_feederMotor.set(speed);
+  }
+
   public void intake() {
     armDown();
     m_feederMotor.set(+Constants.INTAKE_SPEED);
   }
 
   public void outtake() {
-    armUp();
-    // if (m_leftSolenoid.get())
-    //   m_feederMotor.set(+Constants.INTAKE_SPEED);
+    if (m_leftSolenoid.get())
+      m_feederMotor.set(+Constants.INTAKE_SPEED);
   }
 
   public void stop() {
@@ -96,9 +99,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (m_leftSolenoid.get())
-      m_feederMotor.set(+Constants.INTAKE_SPEED);
-    else m_feederMotor.set(0.0);
     // This method will be called once per scheduler run
     Color detectedColor = m_colorSensor.getColor();
     SmartDashboard.putNumber("Blue", detectedColor.blue);
