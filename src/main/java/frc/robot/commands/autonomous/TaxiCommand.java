@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -12,12 +12,14 @@ public class TaxiCommand extends CommandBase {
 
   private double m_loops = 0;
   private int m_direction;
+  private double m_seconds;
   private DriveSubsystem m_driveSubsystem;
 
   /** Creates a new TaxiCommand. */
-  public TaxiCommand(DriveSubsystem driveSubsystem, int direction) {
+  public TaxiCommand(DriveSubsystem driveSubsystem, int direction, double seconds) {
     this.m_driveSubsystem = driveSubsystem;
     this.m_direction = direction;
+    this.m_seconds = seconds;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_driveSubsystem);
   }
@@ -43,6 +45,6 @@ public class TaxiCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_loops > 60 * 5;
+    return m_loops > 60 * m_seconds;
   }
 }

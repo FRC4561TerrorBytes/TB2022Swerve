@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -53,6 +54,7 @@ public class IntakeSubsystem extends SubsystemBase {
     this.m_leftSolenoid = intakeHardware.leftSolenoid;
     this.m_rightSolenoid = intakeHardware.rightSolenoid;
 
+    m_feederMotor.setIdleMode(IdleMode.kCoast);
     m_feederMotor.setInverted(true);
   }
 

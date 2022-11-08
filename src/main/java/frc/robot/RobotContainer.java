@@ -22,8 +22,9 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShootVisionCommand;
-import frc.robot.commands.TaxiCommand;
 import frc.robot.commands.ZeroTurretCommand;
+import frc.robot.commands.autonomous.TaxiCommand;
+import frc.robot.commands.autonomous.TaxiShoot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -68,7 +69,7 @@ public class RobotContainer {
             () -> -modifyAxis(m_primaryController.getLeftY()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getLeftX()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            false
+            true
     ));
 
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> m_intakeSubsystem.intakeSpeed(0.15), m_intakeSubsystem));
@@ -77,9 +78,10 @@ public class RobotContainer {
     // , m_shooterSubsystem));
 
     m_autommodeChooser.setDefaultOption("Do nothing", null);
-    m_autommodeChooser.addOption("Taxi back", new TaxiCommand(m_drivetrainSubsystem, 0));
-    m_autommodeChooser.addOption("Taxi back right", new TaxiCommand(m_drivetrainSubsystem, 1));
-    m_autommodeChooser.addOption("Taxi back left", new TaxiCommand(m_drivetrainSubsystem, -1));
+    m_autommodeChooser.addOption("Taxi back", new TaxiCommand(m_drivetrainSubsystem, 0, 5));
+    m_autommodeChooser.addOption("Taxi back right", new TaxiCommand(m_drivetrainSubsystem, 1, 5));
+    m_autommodeChooser.addOption("Taxi back left", new TaxiCommand(m_drivetrainSubsystem, -1, 5));
+    m_autommodeChooser.addOption("Taxi back shoot", new TaxiShoot(m_drivetrainSubsystem, m_shooterSubsystem, m_feederSubsystem));
 
     SmartDashboard.putData(m_autommodeChooser);
 
@@ -178,8 +180,8 @@ public class RobotContainer {
     value = deadband(value, 0.05);
 
     // Square the axis
-    value = Math.copySign(value * value * value, value);
+    value = Math.copySign(value * value, value);
 
-    return value * 0.6;
+    return value;
   }
 }
