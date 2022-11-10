@@ -22,7 +22,8 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShootVisionCommand;
-import frc.robot.commands.ZeroTurretCommand;
+import frc.robot.commands.autonomous.Line;
+import frc.robot.commands.autonomous.Square;
 import frc.robot.commands.autonomous.TaxiCommand;
 import frc.robot.commands.autonomous.TaxiShoot;
 import frc.robot.subsystems.DriveSubsystem;
@@ -66,10 +67,10 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
-            () -> -modifyAxis(m_primaryController.getLeftY()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_primaryController.getLeftX()) * DriveSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_primaryController.getRightX()) * DriveSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            true
+            () -> -modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+            false
     ));
 
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> m_intakeSubsystem.intakeSpeed(0.15), m_intakeSubsystem));
@@ -82,6 +83,8 @@ public class RobotContainer {
     m_autommodeChooser.addOption("Taxi back right", new TaxiCommand(m_drivetrainSubsystem, 1, 5));
     m_autommodeChooser.addOption("Taxi back left", new TaxiCommand(m_drivetrainSubsystem, -1, 5));
     m_autommodeChooser.addOption("Taxi back shoot", new TaxiShoot(m_drivetrainSubsystem, m_shooterSubsystem, m_feederSubsystem));
+    m_autommodeChooser.addOption("Line", new Line(m_drivetrainSubsystem));
+    m_autommodeChooser.addOption("sQUARE", new Square(m_drivetrainSubsystem));
 
     SmartDashboard.putData(m_autommodeChooser);
 
@@ -101,6 +104,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
+  @SuppressWarnings("unused")
   private void configureButtonBindings() {
     JoystickButton primaryButtonA = new JoystickButton(m_primaryController, Button.kA.value);
     JoystickButton primaryButtonB = new JoystickButton(m_primaryController, Button.kB.value);

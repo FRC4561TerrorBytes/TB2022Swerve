@@ -7,6 +7,12 @@ package frc.robot;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -26,8 +32,31 @@ public final class Constants {
     public static final int NEO_MAX_RPM = 5676;
     public static final int NEO_TICKS_PER_ROTATION = 4096;
 
+    public static final double MAX_VOLTAGE = 12.0;
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.6;
+
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = FALCON_500_MAX_RPM / 60.0 *
+        SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
+        SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
+
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+        Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+            DRIVETRAIN_WHEELBASE_METERS / 2.0);
+
+    public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
+        // Front left
+        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+            Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Front right
+        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+            -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Back left
+        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+            Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        // Back right
+        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+            -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 6;
@@ -194,5 +223,18 @@ public final class Constants {
     public static final double[] HOOD_ANGLE_X = {2, 4.2, 6.4};
     public static final double[] HOOD_ANGLE_Y = {15, 30, 50};
     public static final PolynomialSplineFunction HOOD_ANGLE_CURVE = SPLINE_INTERPOLATOR.interpolate(HOOD_ANGLE_X, HOOD_ANGLE_Y);
+
+    public static final double AUTO_X_KP = 1.0;
+    public static final double AUTO_X_KI = 0.0;
+    public static final double AUTO_X_KD = 0.0;
+
+    public static final double AUTO_Y_KP = 1.0;
+    public static final double AUTO_Y_KI = 0.0;
+    public static final double AUTO_Y_KD = 0.0;
+
+    public static final double AUTO_THETA_KP = 1.0;
+    public static final double AUTO_THETA_KI = 0.0;
+    public static final double AUTO_THETA_KD = 0.0;
+    public static final Constraints AUTO_THETA_CONSTRAINTS = new Constraints(MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
     
 }
