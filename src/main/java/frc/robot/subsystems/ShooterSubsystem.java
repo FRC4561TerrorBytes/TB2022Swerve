@@ -4,22 +4,16 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -84,14 +78,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private SparkMaxPIDController m_leftPIDController;
   private SparkMaxPIDController m_rightPIDController;
+  private SparkMaxPIDController m_turretPIDController;
 
   private SparkPIDConfig m_leftFlywheelConfig;
   private SparkPIDConfig m_rightFlywheelConfig;
   private SparkPIDConfig m_turretConfig;
   private TalonPIDConfig m_hoodConfig;
-
-  private double m_minDistance;
-  private double m_maxDistance;
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem(Hardware shooterHardware, TalonPIDConfig hoodConfig, SparkPIDConfig flywheelConfig, SparkPIDConfig turretConfig) {
@@ -111,6 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     this.m_leftPIDController = m_leftFlywheelMotor.getPIDController();
     this.m_rightPIDController = m_rightFlywheelMotor.getPIDController();
+    this.m_turretPIDController = m_turretMotor.getPIDController();
     
     m_leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
     m_rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
@@ -123,13 +116,19 @@ public class ShooterSubsystem extends SubsystemBase {
     m_hoodMotor.setInverted(true);
   }
 
+  public void setFlywheel(double speed) {
+    m_leftFlywheelMotor.set(speed);
+    m_rightFlywheelMotor.set(speed);
+  }
+
+  
   public void setFlywheelSpeed(double rpm) {
     m_leftPIDController.setReference(rpm, ControlType.kSmartVelocity);
     m_rightPIDController.setReference(rpm, ControlType.kSmartVelocity);
   }
 
   public double getFlywheelSpeed() {
-    return m_leftFlywheelMotor.getEncoder().getVelocity();
+    return m_rightFlywheelMotor.getEncoder().getVelocity();
   }
   
   public void setHoodSpeed(double speed) {
@@ -146,8 +145,14 @@ public class ShooterSubsystem extends SubsystemBase {
     m_turretMotor.set(speed);
   }
 
-  public void setTurretPosition(double angle) {
-    
+  public void setTurretDelta(double angleDelta) {
+    double currentAngle = m_turretMotor.getEncoder().getPosition();
+    if (Math.abs(angleDelta) < Constants.TURRET_TOLERANCE) return;
+    m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kPosition);
+  }
+
+  public void resetTurretEncoder() {
+    m_turretMotor.getEncoder().setPosition(-2.2);
   }
 
   public void stop() {
@@ -161,6 +166,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Flywheel sped", getFlywheelSpeed());
+    SmartDashboard.putNumber("Flywheel speed", getFlywheelSpeed());
+    SmartDashboard.putNumber("Turret position", m_turretMotor.getEncoder().getPosition());
   }
 }

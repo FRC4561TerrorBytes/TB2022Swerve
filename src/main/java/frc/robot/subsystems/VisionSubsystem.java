@@ -24,8 +24,8 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private final double MAX_TOLERANCE = 8.0;
-  private final double MIN_TOLERANCE = 2.5;
+  private final double MAX_TOLERANCE = 2.0;
+  private final double MIN_TOLERANCE = 1.0;
   private final int VISION_PIPELINE_INDEX = 0;
 
   private PhotonCamera m_pi;
@@ -81,7 +81,7 @@ public class VisionSubsystem extends SubsystemBase {
    * Initialize VisionSubsystem
    */
   public void initialize() {
-    setDriverMode(false);
+    setDriverMode(true);
   }
 
   /**
@@ -155,19 +155,20 @@ public class VisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    if (!getDriverMode()) {
-      m_latestResult = m_pi.getLatestResult();
-      m_latestTarget = m_latestResult.getBestTarget();
-      if (isTargetValid()) {
-        m_latestDistance = PhotonUtils.calculateDistanceToTargetMeters(m_cameraHeightMeters,
-                                                                       m_targetHeightMeters, 
-                                                                       m_cameraPitchRadians,
-                                                                       Units.degreesToRadians(m_latestTarget.getPitch()));
-        System.out.println("Vision distance: " + m_latestDistance);
-      } else m_latestDistance = 0.0;
-    } else m_latestTarget = null;
+    // // This method will be called once per scheduler run
+    // if (!getDriverMode()) {
+    //   m_latestResult = m_pi.getLatestResult();
+    //   m_latestTarget = m_latestResult.getBestTarget();
+    //   if (isTargetValid()) {
+    //     m_latestDistance = PhotonUtils.calculateDistanceToTargetMeters(m_cameraHeightMeters,
+    //                                                                    m_targetHeightMeters, 
+    //                                                                    m_cameraPitchRadians,
+    //                                                                    Units.degreesToRadians(m_latestTarget.getPitch()));
+    //     System.out.println("Vision distance: " + m_latestDistance);
+    //     // System.out.println("\t" + m_cameraHeightMeters + "\n\t" + m_targetHeightMeters + "\n\t" + m_cameraPitchRadians + "\n\t" + Units.degreesToRadians(m_latestTarget.getPitch()));
+    //   } else m_latestDistance = 0.0;
+    // } else m_latestTarget = null;
 
-    smartDashboard();
+    // smartDashboard();
   }
 }
