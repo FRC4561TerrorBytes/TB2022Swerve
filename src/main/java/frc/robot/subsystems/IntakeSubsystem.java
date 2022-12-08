@@ -4,116 +4,316 @@
 
 package frc.robot.subsystems;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-// import com.revrobotics.ColorSensorV3;
-import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-// import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-public class IntakeSubsystem extends SubsystemBase {
+import frc.robot.utils.TalonPIDConfig;
 
-  // private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
-  // private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-  // private final Color m_defaultColor = new Color(0.150, 0.0, 0.296);
+public class IntakeSubsystem extends SubsystemBase implements AutoCloseable {
+  static class Hardware {
+    private WPI_TalonFX armMotor;
+    private CANSparkMax rollerMotor;
 
-  private static class Hardware {
-    private CANSparkMax feederMotor;
-    private Solenoid leftSolenoid;
-    private Solenoid rightSolenoid;
-
-    public Hardware(CANSparkMax feederMotor, Solenoid leftSolenoid, Solenoid rightSolenoid) {
-      this.feederMotor = feederMotor;
-      this.leftSolenoid = leftSolenoid;
-      this.rightSolenoid = rightSolenoid;
+    Hardware(WPI_TalonFX armMotor, 
+                    CANSparkMax rollerMotor) {
+      this.armMotor = armMotor;
+      this.rollerMotor = rollerMotor;
     }
   }
 
+  /** An enumeration of valid intake arm positions. */
+  private enum ArmPosition {
+    /** The starting and stopped, intake retracted position. */
+    Top(Constants.INTAKE_ARM_CONFIG.getLowerLimit()),
+    /** The intake extended for intake or outtake operation. */
+    Bottom(Constants.INTAKE_ARM_CONFIG.getUpperLimit());
+
+    /** The intake arm positional PID control set point. */
+    public final double setPoint;
+
+    /**
+     * Creates a new arm position.
+     * 
+     * @param setPoint the intake arm positional PID set point.
+     */
+    private ArmPosition(double setPoint) {
+      this.setPoint = setPoint;
+    }
+  }
+
+  private final String SUBSYSTEM_NAME = "Intake Subsystem";
+
+  private WPI_TalonFX m_armMotor;
+  private CANSparkMax m_rollerMotor;
+  private TalonPIDConfig m_armConfig;
+  /** Holds the last set {@link ArmPosition} */
+  private ArmPosition m_armPosition;
+  /** Holds the fixed roller speed (TODO make this 2x drive speed) */
+  private double m_rollerSpeed;
+  /** Used to control the intake of cargo (see {@link IntakeRequest}). */
+  private final AtomicReference<IntakeRequest> m_request = new AtomicReference<>(IntakeRequest.NO_REQUEST_PENDING);
+  private final IntakeStateMachine m_stateMachine;
+
+  /**
+   * This enum describes the steps in handling the extension and retraction of the
+   * intake.
+   */
+  private enum IntakeRequest {
+    /** No current state change request. */
+    NO_REQUEST_PENDING,
+    /** Extension and intake requested. */
+    INTAKE_REQUESTED,
+    /** Extension and outtake requested. */
+    OUTTAKE_REQUESTED,
+    /** Retraction and stop of the intake has been requested. */
+    RETRACTION_REQUESTED;
+  }
+
+  /**
+   * Create an instance of IntakeSubsystem
+   * <p>
+   * ONLY ONE INSTANCE SHOULD EXIST AT ANY TIME!
+   * <p>
+   * @param armConfig PID config for arm
+   * @param rollerSpeed Intake roller speed [-1.0, +1.0]
+   * @param rumbleController the driver controller to rumble as needed.
+   */
+  public IntakeSubsystem(final Hardware intakeHardware, final TalonPIDConfig armConfig, final double rollerSpeed, final GenericHID rumbleController) {
+    this.m_armMotor = intakeHardware.armMotor;
+    this.m_rollerMotor = intakeHardware.rollerMotor;
+    this.m_armConfig = armConfig;
+    this.m_rollerSpeed = rollerSpeed;
+
+    m_armPosition = ArmPosition.Top;
+    
+    m_rollerMotor.setIdleMode(IdleMode.kCoast);
+    m_rollerMotor.setInverted(true);
+
+    m_armConfig.initializeTalonPID(m_armMotor, FeedbackDevice.IntegratedSensor);
+    m_armMotor.setNeutralMode(NeutralMode.Brake);
+    m_armMotor.setSelectedSensorPosition(0.0);
+    m_stateMachine = new IntakeStateMachine(this, rumbleController);
+    setDefaultCommand(this.m_stateMachine.getDefaultCommand());
+        new Trigger(this::isStateMachineRunning)
+                .whenInactive(new InstantCommand(() -> m_request.set(IntakeRequest.NO_REQUEST_PENDING)));
+  }
+
+  /**
+   * Initialize hardware devices for intake subsystem
+   * @return hardware object containing all necessary devices for this subsystem
+   */
   public static Hardware initializeHardware() {
-    return new Hardware(
-      new CANSparkMax(Constants.INTAKE_ROLLER_MOTOR, MotorType.kBrushless),
-      new Solenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.LEFT_SOLENOID),
-      new Solenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.RIGHT_SOLENOID)
-    );
+    Hardware intakeHardware = new Hardware(new WPI_TalonFX(Constants.ARM_MOTOR_PORT),
+                                           new CANSparkMax(Constants.INTAKE_ROLLER_PORT, MotorType.kBrushless));
+
+    return intakeHardware;
   }
 
-  private CANSparkMax m_feederMotor;
-  private Solenoid m_leftSolenoid;
-  private Solenoid m_rightSolenoid;
-
-  /** Creates a new IntakeSubsyste. */
-  public IntakeSubsystem(Hardware intakeHardware) {
-    this.m_feederMotor = intakeHardware.feederMotor;
-    this.m_leftSolenoid = intakeHardware.leftSolenoid;
-    this.m_rightSolenoid = intakeHardware.rightSolenoid;
-
-    m_feederMotor.setIdleMode(IdleMode.kCoast);
-    m_feederMotor.setInverted(true);
+  /**
+   * Hold arm up on init
+   */
+  public void initialize() {
+    armUp();
   }
 
-  public void setArmPosition(boolean armPosition) {
-    m_leftSolenoid.set(armPosition);
-    m_rightSolenoid.set(armPosition);
+  /**
+   * Create Shuffleboard tab for this subsystem and display values
+   */
+  public void shuffleboard() {
+    ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
+    tab.addNumber("Arm position (ticks)", () -> m_armMotor.getSelectedSensorPosition());
+    tab.addString("Intake command", this::buildCommandString);
   }
 
-  public void toggleArmPosition() {
-    boolean newPosition = !m_leftSolenoid.get();
-    setArmPosition(newPosition);
+  /**
+   * @return a dashboard appropriate name for the current intake command.
+   */
+  private String buildCommandString() {
+    final Command current = this.getCurrentCommand();
+    if (current == null) {
+      return "<null>";
+    } else if (this.isStateMachineRunning()) {
+      return "State machine: " + m_stateMachine.getCurrentState();
+    }
+    return current.getName();
   }
-
-  public void armDown() {
-    setArmPosition(true);
-  }
-
-  public void armUp() {
-    setArmPosition(false);
-  }
-
-  public void intakeSpeed(double speed) {
-    m_feederMotor.set(speed);
-  }
-
-  public void intake() {
-    armDown();
-    m_feederMotor.set(+Constants.INTAKE_SPEED);
-  }
-
-  public void outtake() {
-    if (m_leftSolenoid.get())
-      m_feederMotor.set(+Constants.INTAKE_SPEED);
-  }
-
-  public void stop() {
-    m_feederMotor.stopMotor();
-  }
-
-  // public Color getColorDifference() {
-  //   Color currentColor = m_colorSensor.getColor();
-  //   return new Color(currentColor.red - m_defaultColor.red, 0.0, currentColor.blue - m_defaultColor.blue);
-  // }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // Color detectedColor = m_colorSensor.getColor();
-    // SmartDashboard.putNumber("Blue", detectedColor.blue);
-    // SmartDashboard.putNumber("Red", detectedColor.red);
   }
 
   /**
-   * Get both limit switches for ShooterSubsystem
+   * Move arm to position
+   * @param targetPosition position to move arm to
    */
-  public SparkMaxLimitSwitch[] getLimitSwitches() {
-    return new SparkMaxLimitSwitch[] {
-      m_feederMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen),
-      m_feederMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen)
-    };
+  private void armSetPosition(final ArmPosition targetPosition) {
+    m_armPosition = targetPosition;
+    // Move arm toward setpoint
+    m_armMotor.set(ControlMode.MotionMagic, m_armPosition.setPoint);
+  }
+
+  /**
+   * Move arm to top position
+   */
+  void armUp() {
+    armSetPosition(ArmPosition.Top);
+  }
+
+  /**
+   * Move arm to bottom position
+   */
+  void armDown() {
+    armSetPosition(ArmPosition.Bottom);
+  }
+
+   /**
+   * Intake balls
+   */
+  void intake() {
+    armDown();
+    m_rollerMotor.setOpenLoopRampRate(0.1);
+    m_rollerMotor.set(+m_rollerSpeed);
+  }
+
+  /**
+   * Outtakes balls
+   */
+  void outtake() {
+    armDown();
+    m_rollerMotor.setOpenLoopRampRate(0.1);
+    m_rollerMotor.set(-m_rollerSpeed);
+  }
+
+  /**
+   * Stop roller and return arm to up/stowed position.
+   */
+  void stop() {
+    m_rollerMotor.setOpenLoopRampRate(0.0);
+    m_rollerMotor.stopMotor();
+    armUp();
+  }
+
+  /**
+   * Called to request that we start the intake of cargo.
+   * 
+   * @return true if the request was granted (currently retracted).
+   */
+  public boolean requestIntake() {
+    return isStateMachineRunning()
+        && isRetracted()
+        && this.m_request.compareAndSet(IntakeRequest.NO_REQUEST_PENDING, IntakeRequest.INTAKE_REQUESTED);
+  }
+
+  /**
+   * Called to request that we start the outtake of cargo.
+   * 
+   * @return true if the request was granted (currently retracted).
+   */
+  public boolean requestOuttake() {
+    return isStateMachineRunning()
+        && isRetracted()
+        && this.m_request.compareAndSet(IntakeRequest.NO_REQUEST_PENDING, IntakeRequest.OUTTAKE_REQUESTED);
+  }
+
+  /**
+   * Called to request that the intake be retracted.
+   * 
+   * @return true if the request was granted.
+   */
+  public boolean requestRetraction() {
+    return isStateMachineRunning()
+        && !isRetracted()
+        && this.m_request.compareAndSet(IntakeRequest.NO_REQUEST_PENDING, IntakeRequest.RETRACTION_REQUESTED);
+  }
+
+  /**
+   * @return true if intake has been requested but not yet handled.
+   */
+  boolean isIntakeRequested() {
+    return this.m_request.get() == IntakeRequest.INTAKE_REQUESTED;
+  }
+
+  /**
+   * @return true if intake has been requested but not yet handled.
+   */
+  boolean isOuttakeRequested() {
+    return this.m_request.get() == IntakeRequest.OUTTAKE_REQUESTED;
+  }
+
+  /**
+   * @return true if either intake or outake has been requested but not yet
+   *         handled.
+   */
+  boolean isExtensionRequested() {
+    return isIntakeRequested() || isOuttakeRequested();
+  }
+
+  /**
+   * @return true if the intake is retracted or on its way to retracted and false
+   *         otherwise.
+   */
+  boolean isRetracted() {
+    return this.m_armPosition == ArmPosition.Top;
+  }
+
+  /**
+   * @return true if intake retraction has been requested but not yet handled.
+   */
+  boolean isRetractionRequested() {
+    return this.m_request.get() == IntakeRequest.RETRACTION_REQUESTED;
+  }
+
+  /**
+   * @return true (the caller can move to next state machine state) if an
+   *         intake had been requested.
+   */
+  boolean intakeHandled() {
+    return this.m_request.compareAndSet(IntakeRequest.INTAKE_REQUESTED, IntakeRequest.NO_REQUEST_PENDING);
+  }
+
+  /**
+   * @return true (the caller can move to next state machine state) if an
+   *         outtake had been requested.
+   */
+  boolean outtakeHandled() {
+    return this.m_request.compareAndSet(IntakeRequest.OUTTAKE_REQUESTED, IntakeRequest.NO_REQUEST_PENDING);
+  }
+
+  /**
+   * @return true (the caller can move to next state machine state) if a
+   *         retraction had been requested.
+   */
+  boolean retractionHandled() {
+    return this.m_request.compareAndSet(IntakeRequest.RETRACTION_REQUESTED, IntakeRequest.NO_REQUEST_PENDING);
+  }
+
+  /**
+   * @return true if the state machine is running and false otherwise.
+   */
+  public boolean isStateMachineRunning() {
+    return this.m_stateMachine.getDefaultCommand().isScheduled();
+  }
+
+  @Override
+  public void close() {
+    m_armMotor = null;
+    m_rollerMotor = null;
   }
 }
