@@ -10,9 +10,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 // import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
+// import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,10 +28,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private static class Hardware {
     private CANSparkMax feederMotor;
-    private Solenoid leftSolenoid;
-    private Solenoid rightSolenoid;
+    private DoubleSolenoid leftSolenoid;
+    private DoubleSolenoid rightSolenoid;
 
-    public Hardware(CANSparkMax feederMotor, Solenoid leftSolenoid, Solenoid rightSolenoid) {
+    public Hardware(CANSparkMax feederMotor, DoubleSolenoid leftSolenoid, DoubleSolenoid rightSolenoid) {
       this.feederMotor = feederMotor;
       this.leftSolenoid = leftSolenoid;
       this.rightSolenoid = rightSolenoid;
@@ -39,14 +41,16 @@ public class IntakeSubsystem extends SubsystemBase {
   public static Hardware initializeHardware() {
     return new Hardware(
       new CANSparkMax(Constants.INTAKE_ROLLER_MOTOR, MotorType.kBrushless),
-      new Solenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.LEFT_SOLENOID),
-      new Solenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.RIGHT_SOLENOID)
+      new DoubleSolenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.LEFT_SOLENOID, 7),
+      new DoubleSolenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.RIGHT_SOLENOID, 6)
+      // new Solenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.LEFT_SOLENOID),
+      // new Solenoid(Constants.PCM, PneumaticsModuleType.CTREPCM, Constants.RIGHT_SOLENOID)
     );
   }
 
   private CANSparkMax m_feederMotor;
-  private Solenoid m_leftSolenoid;
-  private Solenoid m_rightSolenoid;
+  private DoubleSolenoid m_leftSolenoid;
+  private DoubleSolenoid m_rightSolenoid;
 
   /** Creates a new IntakeSubsyste. */
   public IntakeSubsystem(Hardware intakeHardware) {
@@ -58,22 +62,27 @@ public class IntakeSubsystem extends SubsystemBase {
     m_feederMotor.setInverted(true);
   }
 
-  public void setArmPosition(boolean armPosition) {
+  public void setArmPosition(Value armPosition) {
     m_leftSolenoid.set(armPosition);
     m_rightSolenoid.set(armPosition);
   }
 
   public void toggleArmPosition() {
-    boolean newPosition = !m_leftSolenoid.get();
+    Value position = m_leftSolenoid.get();
+    Value newPosition;
+    if(position.equals(Value.kForward))
+      newPosition = Value.kReverse;
+    else
+      newPosition = Value.kForward;
     setArmPosition(newPosition);
   }
 
   public void armDown() {
-    setArmPosition(true);
+    setArmPosition(Value.kForward);
   }
 
   public void armUp() {
-    setArmPosition(false);
+    setArmPosition(Value.kReverse);
   }
 
   public void intakeSpeed(double speed) {
@@ -86,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void outtake() {
-    if (m_leftSolenoid.get())
+    if (m_leftSolenoid.get().equals(Value.kForward))
       m_feederMotor.set(+Constants.INTAKE_SPEED);
   }
 

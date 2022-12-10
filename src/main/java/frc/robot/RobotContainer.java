@@ -70,7 +70,7 @@ public class RobotContainer {
             () -> -modifyAxis(m_primaryController.getLeftY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getLeftX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_primaryController.getRightX()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-            false
+            true
     ));
 
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> m_intakeSubsystem.intakeSpeed(0.15), m_intakeSubsystem));
