@@ -147,8 +147,8 @@ public final class Constants {
     public static final double TURRET_KD = 0.001;
     public static final double TURRET_MECHANICAL_EFFICIENCY = 1.0;
     public static final double TURRET_TOLERANCE = 1.0;
-    public static final double TURRET_LOWER_LIMIT = -90;
-    public static final double TURRET_UPPER_LIMIT = 90;
+    public static final double TURRET_LOWER_LIMIT = -45;
+    public static final double TURRET_UPPER_LIMIT = 45;
     public static final boolean TURRET_ENABLE_SOFT_LIMITS = true;
     public static final double TURRET_VELOCITY_RPM = NEO_MAX_RPM;
     public static final double TURRET_ACCELERATOIN_RPM_PER_SEC = NEO_MAX_RPM;

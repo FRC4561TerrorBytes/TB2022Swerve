@@ -22,6 +22,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShootVisionCommand;
+import frc.robot.commands.TrackTurretCommand;
 import frc.robot.commands.autonomous.Line;
 import frc.robot.commands.autonomous.Square;
 import frc.robot.commands.autonomous.TaxiCommand;
@@ -74,6 +75,8 @@ public class RobotContainer {
     ));
 
     m_intakeSubsystem.setDefaultCommand(new RunCommand(() -> m_intakeSubsystem.intakeSpeed(0.15), m_intakeSubsystem));
+
+    m_shooterSubsystem.setDefaultCommand(new TrackTurretCommand(m_shooterSubsystem, m_visionSubsystem));
 
     // m_shooterSubsystem.setDefaultCommand(new RunCommand( () -> {m_shooterSubsystem.setFlywheel(Constants.FLYWHEEL_IDLE_PERCENT);}
     // , m_shooterSubsystem));

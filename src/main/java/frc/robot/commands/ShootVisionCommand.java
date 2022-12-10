@@ -62,10 +62,10 @@ public class ShootVisionCommand extends CommandBase {
             double dx = m_visionSubsystem.getDistance() * Constants.SCALE_VISION_TO_METERS + Constants.TARGET_DISTANCE_OFFSET;
 
             double theta = MathUtil.clamp(Constants.HOOD_ANGLE_CURVE.value(dx), 20, 35);
-
-            SmartDashboard.putNumber("Theta", theta);
             double velocity = velocityToTarget(Units.degreesToRadians(90 - theta), dx, dy);
             double rpm = metersPerSecondToRPM(velocity);
+
+            SmartDashboard.putNumber("Theta", theta);
             SmartDashboard.putNumber("Target RPM", rpm);
             SmartDashboard.putNumber("Vision Distance", dx);
 

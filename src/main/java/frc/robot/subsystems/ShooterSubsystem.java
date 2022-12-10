@@ -151,6 +151,10 @@ public class ShooterSubsystem extends SubsystemBase {
     m_turretPIDController.setReference(currentAngle + angleDelta, ControlType.kPosition);
   }
 
+  public double getTurretAngle() {
+    return m_turretMotor.getEncoder().getPosition();
+  }
+
   public void resetTurretEncoder() {
     m_turretMotor.getEncoder().setPosition(-2.2);
   }

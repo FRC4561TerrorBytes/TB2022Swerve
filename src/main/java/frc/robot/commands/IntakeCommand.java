@@ -31,7 +31,7 @@ public class IntakeCommand extends CommandBase {
       m_alliance = AllianceColor.Blue;
     }
 
-    addRequirements(m_intakeSubsystem, m_feederSubsystem);
+    addRequirements(m_intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.
