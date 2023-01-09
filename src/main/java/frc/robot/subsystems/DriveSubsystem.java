@@ -47,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
      m_moduleConfig.setDriveCurrentLimit(Constants.DRIVE_CURRENT_LIMIT);
      m_moduleConfig.setSteerCurrentLimit(Constants.TURN_CURRENT_LIMIT);
 
-    m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         // This parameter is optional, but will allow you to see the current state of
         // the module on the dashboard.
         tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -69,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.FRONT_LEFT_MODULE_STEER_OFFSET);
 
     // We will do the same for the other modules
-    m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.FRONT_RIGHT_MODULE_STEER_ENCODER,
         Constants.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
-    m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.BACK_LEFT_MODULE_STEER_ENCODER,
         Constants.BACK_LEFT_MODULE_STEER_OFFSET);
 
-    m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
