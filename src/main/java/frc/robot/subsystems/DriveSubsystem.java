@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -31,14 +32,13 @@ public class DriveSubsystem extends SubsystemBase {
   // cause the angle reading to increase until it wraps back over to zero.
   // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
-  private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS, new Rotation2d());
 
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule;
   private final SwerveModule m_frontRightModule;
   private final SwerveModule m_backLeftModule;
   private final SwerveModule m_backRightModule;
-
+  
   public DriveSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -47,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
      m_moduleConfig.setDriveCurrentLimit(Constants.DRIVE_CURRENT_LIMIT);
      m_moduleConfig.setSteerCurrentLimit(Constants.TURN_CURRENT_LIMIT);
 
-    m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         // This parameter is optional, but will allow you to see the current state of
         // the module on the dashboard.
         tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -69,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.FRONT_LEFT_MODULE_STEER_OFFSET);
 
     // We will do the same for the other modules
-    m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.FRONT_RIGHT_MODULE_STEER_ENCODER,
         Constants.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
-    m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.BACK_LEFT_MODULE_STEER_ENCODER,
         Constants.BACK_LEFT_MODULE_STEER_OFFSET);
 
-    m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+    m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
         tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
@@ -104,6 +104,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_navx.calibrate();
   }
+
+  // private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(Constants.DRIVE_KINEMATICS, new Rotation2d(), 
+                                                                          // new SwerveModulePosition[]{});
+
 
   public Rotation2d getGyroscopeRotation() {
     // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
@@ -135,16 +139,17 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightModule.set(states[3].speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND * Constants.MAX_VOLTAGE,
         states[3].angle.getRadians());
 
-    m_odometry.update(getGyroscopeRotation(), states);
+    // m_odometry.update(getGyroscopeRotation(), states);
   }
 
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    // return m_odometry.getPoseMeters();
+    return new Pose2d();
   }
 
   public void resetOdometry(Pose2d position) {
     m_navx.reset();
-    m_odometry.resetPosition(position, new Rotation2d());
+    // m_odometry.resetPosition(position, new Rotation2d());
   }
 
   public void stop() {
